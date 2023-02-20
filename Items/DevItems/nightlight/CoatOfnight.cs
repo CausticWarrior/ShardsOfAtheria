@@ -1,7 +1,6 @@
 ﻿using Terraria;
-using Terraria.GameContent.Creative;
-using Terraria.ModLoader;
 using Terraria.ID;
+using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Items.DevItems.nightlight
 {
@@ -16,11 +15,7 @@ namespace ShardsOfAtheria.Items.DevItems.nightlight
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("nightlight's Coat");
-            Tooltip.SetDefault("'Great for impersonating devs!'\n" +
-                "'no capitalization on my name'");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using MMZeroElements;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Projectiles.Weapon.Ranged
@@ -9,6 +9,7 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Ranged
     {
         public override void SetStaticDefaults()
         {
+            ProjectileElements.Fire.Add(Type);
         }
 
         public override void SetDefaults()
@@ -28,7 +29,7 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Ranged
 
         public override void AI()
         {
-            Projectile.rotation = Projectile.velocity.ToRotation();
+            Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(90);
         }
     }
 }

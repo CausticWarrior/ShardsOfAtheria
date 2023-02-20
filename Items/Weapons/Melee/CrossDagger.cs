@@ -1,10 +1,9 @@
-using Microsoft.Xna.Framework;
-using ShardsOfAtheria.Players;
+using MMZeroElements;
+using ShardsOfAtheria.Utilities;
+using ShardsOfAtheria.Systems;
 using Terraria;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Terraria.Utilities;
 
 namespace ShardsOfAtheria.Items.Weapons.Melee
 {
@@ -12,11 +11,8 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("A blade that heals 100 Life after striking an enemy\n" +
-                "Taking damage while this is in your inventory will disable this effect for a time\n" +
-                "'SOUL STEAL!'");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+            SacrificeTotal = 1;
+            WeaponElements.Metal.Add(Type);
         }
 
         public override void SetDefaults()
@@ -43,30 +39,29 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddRecipeGroup(SoARecipes.Gold, 7)
+                .AddRecipeGroup(ShardsRecipes.Gold, 7)
                 .AddIngredient(ItemID.LifeCrystal, 5)
                 .AddIngredient(ItemID.ManaCrystal, 5)
                 .AddTile(TileID.Anvils)
                 .Register();
         }
 
-        public override int ChoosePrefix(UnifiedRandom rand)
+        public override bool AllowPrefix(int pre)
         {
-            return base.ChoosePrefix(rand);
+            return false;
         }
 
         public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
         {
-            if (!player.GetModPlayer<SoAPlayer>().heartBreak)
+            if (!player.ShardsOfAtheria().heartBreak)
             {
-                player.statLife += 100;
-                player.HealEffect(100);
+                player.Heal(100);
             }
         }
 
         public override void UpdateInventory(Player player)
         {
-            player.GetModPlayer<SoAPlayer>().sMHealingItem = true;
+            player.ShardsOfAtheria().healingItem = true;
         }
     }
 }

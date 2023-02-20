@@ -1,5 +1,5 @@
-﻿using Terraria;
-using Terraria.GameContent.Creative;
+﻿using ShardsOfAtheria.Utilities;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -7,11 +7,17 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 {
 	public class TopazCore : ModItem
 	{
+		public override void Load()
+		{
+			if (Main.netMode != NetmodeID.Server)
+			{
+				EquipLoader.AddEquipTexture(Mod, "ShardsOfAtheria/Items/Accessories/GemCores/TopazAmulet", EquipType.Neck, this, "TopazAmulet");
+			}
+		}
+
 		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("Increases max Life by 40");
-
-			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+			SacrificeTotal = 1;
 		}
 
 		public override void SetDefaults()
@@ -19,6 +25,7 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 			Item.width = 32;
 			Item.height = 32;
 			Item.accessory = true;
+			Item.canBePlacedInVanityRegardlessOfConditions = true;
 
 			Item.rare = ItemRarityID.Blue;
 			Item.value = Item.sellPrice(0, 1, 25);
@@ -36,7 +43,8 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 
 		public override void UpdateAccessory(Player player, bool hideVisual)
 		{
+			player.ShardsOfAtheria().topazNecklace = !hideVisual;
 			player.statLifeMax2 += 40;
-        }
+		}
 	}
 }

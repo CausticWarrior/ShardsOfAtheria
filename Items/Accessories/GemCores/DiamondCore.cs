@@ -1,5 +1,5 @@
-﻿using Terraria;
-using Terraria.GameContent.Creative;
+﻿using ShardsOfAtheria.Utilities;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -7,11 +7,17 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 {
 	public class DiamondCore : ModItem
 	{
+		public override void Load()
+		{
+			if (Main.netMode != NetmodeID.Server)
+			{
+				EquipLoader.AddEquipTexture(Mod, "ShardsOfAtheria/Items/Accessories/GemCores/DiamondShield", EquipType.Shield, this, "DiamondShield");
+			}
+		}
+
 		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("Grants immunity to knockback");
-
-			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+			SacrificeTotal = 1;
 		}
 
 		public override void SetDefaults()
@@ -19,6 +25,7 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 			Item.width = 32;
 			Item.height = 32;
 			Item.accessory = true;
+			Item.canBePlacedInVanityRegardlessOfConditions = true;
 
 			Item.defense = 15;
 
@@ -31,14 +38,16 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 			CreateRecipe()
 				.AddIngredient(ModContent.ItemType<DiamondCore_Lesser>())
 				.AddIngredient(ItemID.HellstoneBar, 5)
-				.AddIngredient(ItemID.CobaltShield)
+				.AddIngredient(ItemID.ObsidianShield)
 				.AddTile(TileID.Anvils)
 				.Register();
 		}
 
-        public override void UpdateAccessory(Player player, bool hideVisual)
-        {
+		public override void UpdateAccessory(Player player, bool hideVisual)
+		{
+			player.ShardsOfAtheria().diamanodShield = !hideVisual;
 			player.noKnockback = true;
-        }
-    }
+			player.fireWalk = true;
+		}
+	}
 }

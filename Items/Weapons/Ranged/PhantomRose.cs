@@ -1,9 +1,7 @@
 using Microsoft.Xna.Framework;
 using ShardsOfAtheria.Projectiles.Weapon.Ranged;
-using System.Collections.Generic;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -13,20 +11,7 @@ namespace ShardsOfAtheria.Items.Weapons.Ranged
 	{
 		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("Shoots an extra Phantom Bullet\n" +
-				"48% chance to not consume ammo");
-
-			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
-		}
-
-		public override void ModifyTooltips(List<TooltipLine> tooltips)
-		{
-			var line = new TooltipLine(Mod, "Verbose:RemoveMe", "This tooltip won't show in-game");
-			line = new TooltipLine(Mod, "PhantomRose", "'Scarlet's younger sister'")
-			{
-				OverrideColor = Color.Red
-			};
-			tooltips.Add(line);
+			SacrificeTotal = 1;
 		}
 
 		public override void SetDefaults()
@@ -74,10 +59,10 @@ namespace ShardsOfAtheria.Items.Weapons.Ranged
 			return Main.rand.NextFloat() >= .48f;
 		}
 
-        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+		public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
 		{
 			Projectile.NewProjectile(source, position, velocity, ModContent.ProjectileType<PhantomBullet>(), damage, knockback, player.whoAmI);
 			return base.Shoot(player, source, position, velocity, type, damage, knockback);
-        }
-    }
+		}
+	}
 }

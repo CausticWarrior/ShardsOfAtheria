@@ -1,21 +1,23 @@
+using Microsoft.Xna.Framework;
+using ShardsOfAtheria.Globals;
+using ShardsOfAtheria.Items.Placeable;
+using ShardsOfAtheria.Players;
+using ShardsOfAtheria.Projectiles.Weapon.Areus.AreusSword;
+using ShardsOfAtheria.Systems;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ShardsOfAtheria.Items.Placeable;
-using ShardsOfAtheria.Buffs;
-using ShardsOfAtheria.Projectiles.Weapon.Melee;
-using Terraria.GameContent.Creative;
-using ShardsOfAtheria.Items.Potions;
 
 namespace ShardsOfAtheria.Items.Weapons.Areus
 {
-    public class AreusSword : ModItem
+    public class AreusSword : OverchargeWeapon
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("'Definitely wont(?) shock you'");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+            SacrificeTotal = 1;
+            SoAGlobalItem.AreusWeapon.Add(Type);
+            SoAGlobalItem.UpgradeableItem.Add(Type);
+            SoAGlobalItem.Eraser.Add(Type);
         }
 
         public override void SetDefaults()
@@ -31,32 +33,37 @@ namespace ShardsOfAtheria.Items.Weapons.Areus
             Item.useAnimation = 20;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
-            Item.shootSpeed = 10;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
 
+            Item.shootSpeed = 1f;
+            Item.rare = ItemRarityID.Cyan;
             Item.value = Item.sellPrice(0, 4, 25);
-            Item.shoot = ModContent.ProjectileType<ElectricBlade>();
+            Item.shoot = ModContent.ProjectileType<AreusSwordProj>();
         }
 
         public override void AddRecipes()
         {
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<AreusShard>(), 20)
+                .AddRecipeGroup(ShardsRecipes.Gold, 6)
                 .AddIngredient(ItemID.FragmentVortex, 20)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
 
-        public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
+        public override void Overcharge(Player player, int projType, float damageMultiplier, Vector2 velocity, float ai1 = 0)
         {
-            if (player.HasBuff(ModContent.BuffType<Conductive>()))
+            float numberProjectiles = 5;
+            float shardRotation = MathHelper.ToRadians(15);
+            Vector2 position = player.Center;
+            for (int i = 0; i < numberProjectiles; i++)
             {
-                damage += .15f;
+                Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.Lerp(-shardRotation, shardRotation, i / (numberProjectiles - 1))); // Watch out for dividing by 0 if there is only 1 projectile.
+                Projectile.NewProjectile(player.GetSource_FromThis(), position, perturbedSpeed, ModContent.ProjectileType<ElectricBlade>(),
+                    (int)(Item.damage * damageMultiplier), Item.knockBack, player.whoAmI);
             }
-        }
-
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockback, bool crit)
-        {
-            target.AddBuff(ModContent.BuffType<ElectricShock>(), player.HasBuff(ModContent.BuffType<Conductive>()) ? 1200 : 600);
+            ConsumeOvercharge(player);
         }
     }
 }

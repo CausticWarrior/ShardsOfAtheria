@@ -1,24 +1,27 @@
+using Microsoft.Xna.Framework;
+using ShardsOfAtheria.Globals;
+using ShardsOfAtheria.Items.Placeable;
+using ShardsOfAtheria.Players;
+using ShardsOfAtheria.Projectiles.Weapon.Areus;
+using ShardsOfAtheria.Systems;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ShardsOfAtheria.Items.Placeable;
-using Terraria;
-using ShardsOfAtheria.Projectiles.Weapon.Magic;
-using Terraria.GameContent.Creative;
-using ShardsOfAtheria.Items.Potions;
 
 namespace ShardsOfAtheria.Items.Weapons.Areus
 {
-    public class AreusStaff : ModItem
+    public class AreusStaff : OverchargeWeapon
     {
         public override void SetStaticDefaults()
         {
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+            SacrificeTotal = 1;
+            SoAGlobalItem.AreusWeapon.Add(Type);
         }
 
         public override void SetDefaults()
         {
-            Item.width = 60;
-            Item.height = 60;
+            Item.width = 58;
+            Item.height = 56;
 
             Item.damage = 130;
             Item.DamageType = DamageClass.Magic;
@@ -34,27 +37,25 @@ namespace ShardsOfAtheria.Items.Weapons.Areus
             Item.noMelee = true;
             Item.staff[Item.type] = true;
 
+            Item.shootSpeed = 12f;
             Item.rare = ItemRarityID.Cyan;
             Item.value = Item.sellPrice(0, 4, 25);
-            Item.shoot = ModContent.ProjectileType<ElectricBolt>();
-            Item.shootSpeed = 16f;
+            Item.shoot = ModContent.ProjectileType<ElectricOrb>();
         }
 
         public override void AddRecipes()
         {
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<AreusShard>(), 10)
+                .AddRecipeGroup(ShardsRecipes.Gold, 3)
                 .AddIngredient(ItemID.FragmentVortex, 7)
                 .AddTile(TileID.LunarCraftingStation)
                 .Register();
         }
 
-        public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
+        public override void Overcharge(Player player, int projType, float damageMultiplier, Vector2 velocity, float ai1 = 0)
         {
-            if (player.HasBuff(ModContent.BuffType<Conductive>()))
-            {
-                damage += .15f;
-            }
+            ConsumeOvercharge(player);
         }
     }
 }

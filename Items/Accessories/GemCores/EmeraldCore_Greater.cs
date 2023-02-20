@@ -1,5 +1,5 @@
-﻿using Terraria;
-using Terraria.GameContent.Creative;
+﻿using ShardsOfAtheria.Utilities;
+using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -11,16 +11,9 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 	{
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Greater Emerald Core");
-			Tooltip.SetDefault("Counts as wings\n" +
-				"10% increased movement speed\n" +
-				"Increased jump height" +
-				"Panic Necklace, Lava Waders and Flippers effects\n" +
-				"Grants flight and slowfall");
-
 			ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(120, 9f, 2.5f);
 
-			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+			SacrificeTotal = 1;
 		}
 
 		public override void SetDefaults()
@@ -28,6 +21,7 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 			Item.width = 32;
 			Item.height = 32;
 			Item.accessory = true;
+			Item.canBePlacedInVanityRegardlessOfConditions = true;
 
 			Item.rare = ItemRarityID.Orange;
 			Item.value = Item.sellPrice(0, 2, 25);
@@ -35,12 +29,19 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 
 		public override void UpdateAccessory(Player player, bool hideVisual)
 		{
-			player.jumpBoost = true;
-			player.panic = true;
-			player.accFlipper = true;
+			player.ShardsOfAtheria().emeraldWings = player.velocity.Y != 0 || !hideVisual;
+
+			// Terraspark Boots
 			player.waterWalk = true;
 			player.fireWalk = true;
 			player.lavaMax += 420;
+			player.accRunSpeed = 6.75f;
+			player.rocketBoots = 3;
+			player.iceSkate = true;
+
+			// Misc
+			player.accFlipper = true;
+			player.jumpBoost = true;
 		}
 
 		public override void AddRecipes()
@@ -49,7 +50,7 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 				.AddIngredient(ModContent.ItemType<EmeraldCore>())
 				.AddIngredient(ItemID.HallowedBar, 5)
 				.AddIngredient(ItemID.Flipper)
-				.AddIngredient(ItemID.LavaWaders)
+				.AddIngredient(ItemID.TerrasparkBoots)
 				.AddIngredient(ItemID.PanicNecklace)
 				.AddTile(TileID.MythrilAnvil)
 				.Register();

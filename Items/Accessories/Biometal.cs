@@ -1,12 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
-using ShardsOfAtheria.Buffs;
+using ShardsOfAtheria.Config;
 using ShardsOfAtheria.Items.Placeable;
 using ShardsOfAtheria.Players;
+using ShardsOfAtheria.Utilities;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Items.Accessories
@@ -15,20 +16,21 @@ namespace ShardsOfAtheria.Items.Accessories
     {
         public override void Load()
         {
-            // The code below runs only if we're not loading on a server
-            if (Main.netMode != NetmodeID.Server)
-            {
-                // Add equip textures
-                EquipLoader.AddEquipTexture(Mod, $"{Texture}_{EquipType.Head}", EquipType.Head, this);
-                EquipLoader.AddEquipTexture(Mod, $"{Texture}_{EquipType.Body}", EquipType.Body, this);
-                EquipLoader.AddEquipTexture(Mod, $"{Texture}_{EquipType.Legs}", EquipType.Legs, this);
-
-            }
+            // Since the equipment textures weren't loaded on the server, we can't have this code running server-side
+            if (Main.netMode == NetmodeID.Server)
+                return;
+            // Add equip textures
+            EquipLoader.AddEquipTexture(Mod, $"{Texture}_{EquipType.Head}", EquipType.Head, this);
+            EquipLoader.AddEquipTexture(Mod, $"{Texture}_{EquipType.Body}", EquipType.Body, this);
+            EquipLoader.AddEquipTexture(Mod, $"{Texture}_{EquipType.Legs}", EquipType.Legs, this);
         }
 
         // Called in SetStaticDefaults
         private void SetupDrawing()
         {
+            // Since the equipment textures weren't loaded on the server, we can't have this code running server-side
+            if (Main.netMode == NetmodeID.Server)
+                return;
             int equipSlotHead = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Head);
             int equipSlotBody = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Body);
             int equipSlotLegs = EquipLoader.GetEquipSlot(Mod, Name, EquipType.Legs);
@@ -41,31 +43,15 @@ namespace ShardsOfAtheria.Items.Accessories
 
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Equipping transforms the user into a Mega Man\n" +
-                "25% Increased damage\n" +
-                "Increases movement speed by 10%\n" +
-                "Increased life regen\n" +
-                "Increased life by 100 and mana by 40\n" +
-                "Grants dash, wall sliding and immunity to fall damage and certain debuffs");
+            SacrificeTotal = 1;
 
             SetupDrawing();
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            var list = ShardsOfAtheria.OverdriveKey.GetAssignedKeys();
-            string keyname = "Not bound";
-
-            if (list.Count > 0)
-            {
-                keyname = list[0];
-            }
-
-            tooltips.Add(new TooltipLine(Mod, "Damage", $"Press '[i:{keyname}]' to activate or deactivate Overdrive\n" +
-                "Overdrive doubles all damage\n" +
-                "Overdrive lasts until you get hit or run out of Overdrive time"));
+            tooltips.Add(new TooltipLine(Mod, "Overdrive", string.Format(Language.GetTextValue("Mods.ShardsOfAtheria.Common.OverdriveInfo"),
+                    ShardsOfAtheria.OverdriveKey.GetAssignedKeys().Count > 0 ? ShardsOfAtheria.OverdriveKey.GetAssignedKeys()[0] : "[Unbounded Hotkey]")));
         }
 
         public override void SetDefaults()
@@ -93,10 +79,10 @@ namespace ShardsOfAtheria.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            if (!player.HasBuff(ModContent.BuffType<Megamerged>()))
+            ShardsPlayer shardsPlayer = player.ShardsOfAtheria();
+            if (!shardsPlayer.BiometalSound)
             {
-                player.AddBuff(ModContent.BuffType<Megamerged>(), 60);
-                if (ModContent.GetInstance<ConfigClientSide>().biometalSound)
+                if (ModContent.GetInstance<ShardsClientConfig>().biometalSound)
                 {
                     if (player.Male)
                         SoundEngine.PlaySound(new SoundStyle($"{nameof(ShardsOfAtheria)}/Sounds/Item/MegamergeMale"));
@@ -104,19 +90,15 @@ namespace ShardsOfAtheria.Items.Accessories
                 }
             }
 
-            player.GetModPlayer<SoAPlayer>().Biometal = true;
-            player.GetModPlayer<SoAPlayer>().BiometalHideVanity = hideVisual;
+            shardsPlayer.Biometal = true;
+            shardsPlayer.BiometalSound = true;
+            shardsPlayer.BiometalHideVanity = hideVisual;
 
             player.extraFall += 45;
             player.GetDamage(DamageClass.Generic) += 0.25f;
             player.statLifeMax2 += 100;
             player.statManaMax2 += 40;
             player.noFallDmg = true;
-            player.buffImmune[BuffID.Bleeding] = true;
-            player.buffImmune[BuffID.Poisoned] = true;
-            player.buffImmune[BuffID.Weak] = true;
-            player.buffImmune[BuffID.WitheredWeapon] = true;
-            player.buffImmune[BuffID.Venom] = true;
             player.spikedBoots++;
 
             BiometalDashPlayer mp = player.GetModPlayer<BiometalDashPlayer>();
@@ -161,10 +143,17 @@ namespace ShardsOfAtheria.Items.Accessories
 
         public override void UpdateVanity(Player player)
         {
-            if (!player.HasBuff(ModContent.BuffType<Megamerged>()))
+            ShardsPlayer shardsPlayer = player.ShardsOfAtheria();
+            BiometalSound(player);
+            shardsPlayer.BiometalSound = true;
+        }
+
+        public void BiometalSound(Player player)
+        {
+            ShardsPlayer shardsPlayer = player.ShardsOfAtheria();
+            if (!shardsPlayer.BiometalSound)
             {
-                player.AddBuff(ModContent.BuffType<Megamerged>(), 60);
-                if (ModContent.GetInstance<ConfigClientSide>().biometalSound)
+                if (ModContent.GetInstance<ShardsClientConfig>().biometalSound)
                 {
                     if (player.Male)
                         SoundEngine.PlaySound(new SoundStyle($"{nameof(ShardsOfAtheria)}/Sounds/Item/MegamergeMale"));
@@ -175,18 +164,19 @@ namespace ShardsOfAtheria.Items.Accessories
 
         public override void UpdateInventory(Player player)
         {
-            if (player.HasBuff(ModContent.BuffType<Megamerged>()))
-            {
-                player.ClearBuff(ModContent.BuffType<Megamerged>());
-                SoundEngine.PlaySound(SoundID.Item4);
-            }
+            UnMegaMerge(player);
         }
 
         public override void HoldItem(Player player)
         {
-            if (player.HasBuff(ModContent.BuffType<Megamerged>()))
+            UnMegaMerge(player);
+        }
+
+        public void UnMegaMerge(Player player)
+        {
+            ShardsPlayer shardsPlayer = player.ShardsOfAtheria();
+            if (shardsPlayer.Biometal)
             {
-                player.ClearBuff(ModContent.BuffType<Megamerged>());
                 SoundEngine.PlaySound(SoundID.Item4);
             }
         }
@@ -257,6 +247,8 @@ namespace ShardsOfAtheria.Items.Accessories
 
             //Here you'd be able to set an effect that happens when the dash first activates
             //Some examples include:  the larger smoke effect from the Master Ninja Gear and Tabi
+            Dust dust = Dust.NewDustDirect(Player.position, Player.width, Player.height, DustID.Smoke, Player.velocity.X, Player.velocity.Y, 0, default, 1f);
+            dust.noGravity = true;
         }
     }
 }

@@ -1,9 +1,9 @@
-using Terraria.ID;
-using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.GameContent.Creative;
 using System.Collections.Generic;
+using Terraria;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Items.Weapons.Ranged
 {
@@ -13,17 +13,15 @@ namespace ShardsOfAtheria.Items.Weapons.Ranged
 
 		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("<right> to switch between 2 modes: Semi and Full-auto");
-
-			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+			SacrificeTotal = 1;
 		}
 
-		public override void SetDefaults() 
+		public override void SetDefaults()
 		{
 			Item.width = 50;
 			Item.height = 20;
 
-			Item.damage = 30;
+			Item.damage = 46;
 			Item.DamageType = DamageClass.Ranged;
 			Item.knockBack = .1f;
 			Item.crit = 5;
@@ -41,7 +39,7 @@ namespace ShardsOfAtheria.Items.Weapons.Ranged
 			Item.useAmmo = AmmoID.Bullet;
 		}
 
-		public override void AddRecipes() 
+		public override void AddRecipes()
 		{
 			CreateRecipe()
 				.AddIngredient(ItemID.ChlorophyteBar, 15)
@@ -55,7 +53,7 @@ namespace ShardsOfAtheria.Items.Weapons.Ranged
 			return new Vector2(-16, -1);
 		}
 
-        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
+		public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
 		{
 			if (type == ProjectileID.Bullet && Main.rand.NextBool(2))
 			{
@@ -68,7 +66,7 @@ namespace ShardsOfAtheria.Items.Weapons.Ranged
 			}
 		}
 
-        public override bool AltFunctionUse(Player player)
+		public override bool AltFunctionUse(Player player)
 		{
 			return true;
 		}
@@ -86,9 +84,9 @@ namespace ShardsOfAtheria.Items.Weapons.Ranged
 					fullAuto = false;
 				else fullAuto = true;
 				if (!fullAuto)
-					CombatText.NewText(player.Hitbox, Color.White, "Semi-auto");
+					CombatText.NewText(player.Hitbox, Color.White, Language.GetTextValue("Mods.ShardsOfAtheria.Common.FiringMode1"));
 				if (fullAuto)
-					CombatText.NewText(player.Hitbox, Color.White, "Full-auto");
+					CombatText.NewText(player.Hitbox, Color.White, Language.GetTextValue("Mods.ShardsOfAtheria.Common.FiringMode3"));
 			}
 			else
 			{
@@ -112,36 +110,12 @@ namespace ShardsOfAtheria.Items.Weapons.Ranged
 			return base.CanUseItem(player);
 		}
 
-        public override void UpdateInventory(Player player)
-		{
-			if (player.altFunctionUse == 2)
-            {
-				return;
-            }
-			if (!fullAuto)
-			{
-				Item.shoot = ItemID.PurificationPowder;
-				Item.useTime = 6;
-				Item.useAnimation = 6;
-				Item.UseSound = SoundID.Item40;
-				Item.autoReuse = false;
-			}
-			else if (fullAuto)
-			{
-				Item.shoot = ItemID.PurificationPowder;
-				Item.useTime = 6;
-				Item.useAnimation = 6;
-				Item.UseSound = SoundID.Item40;
-				Item.autoReuse = true;
-			}
-		}
-
-        public override void ModifyTooltips(List<TooltipLine> tooltips)
+		public override void ModifyTooltips(List<TooltipLine> tooltips)
 		{
 			if (!fullAuto)
-				tooltips.Add(new TooltipLine(Mod, "Fire mode", "Semi-auto"));
+				tooltips.Add(new TooltipLine(Mod, "Fire mode", Language.GetTextValue("Mods.ShardsOfAtheria.Common.FiringMode1")));
 			if (fullAuto)
-				tooltips.Add(new TooltipLine(Mod, "Fire mode", "Full-auto"));
+				tooltips.Add(new TooltipLine(Mod, "Fire mode", Language.GetTextValue("Mods.ShardsOfAtheria.Common.FiringMode3")));
 		}
-    }
+	}
 }

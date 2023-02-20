@@ -1,7 +1,7 @@
+using MMZeroElements;
 using ShardsOfAtheria.Projectiles.Weapon.Melee;
 using Terraria;
 using Terraria.Audio;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,14 +9,13 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
 {
 	public class ReactorMeltdown : ModItem
 	{
-		public override void SetStaticDefaults() 
+		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("'Sussus Moogus'");
-
-			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+			SacrificeTotal = 1;
+			WeaponElements.Electric.Add(Type);
 		}
 
-		public override void SetDefaults() 
+		public override void SetDefaults()
 		{
 			Item.width = 30;
 			Item.height = 26;
@@ -32,7 +31,6 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
 			Item.UseSound = new SoundStyle($"{nameof(ShardsOfAtheria)}/Sounds/Item/ReactorMeltdownAlarm")
 			{
 				Volume = 0.9f,
-				PitchVariance = 0.2f,
 				MaxInstances = 3,
 			};
 			Item.noMelee = true;

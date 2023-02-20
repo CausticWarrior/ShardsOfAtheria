@@ -8,14 +8,38 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Items\ModItems\**" />
+    <Compile Remove="SoA Demonstrations\**" />
+    <Compile Remove="Walls\**" />
+    <EmbeddedResource Remove="Items\ModItems\**" />
+    <EmbeddedResource Remove="SoA Demonstrations\**" />
+    <EmbeddedResource Remove="Walls\**" />
+    <None Remove="Items\ModItems\**" />
+    <None Remove="SoA Demonstrations\**" />
+    <None Remove="Walls\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="tModLoader.CodeAssist" Version="0.1.*" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Items\Armor\" />
-    <Folder Include="Items\SlayerItems\NewFolder\" />
-    <Folder Include="Items\Weapons\Summon\Minion\" />
+    <Folder Include="Items\SlayerBoxes\" />
     <Folder Include="Items\Weapons\Summon\Sentry\" />
-    <Folder Include="Items\Weapons\Summon\Whip\" />
-    <Folder Include="Walls\" />
+    <Folder Include="NPCs\Boss\AnnahStellar\" />
+    <Folder Include="NPCs\Boss\Exodus\" />
+    <Folder Include="NPCs\Boss\Andromeda\" />
+    <Folder Include="NPCs\Boss\Genesis\" />
+    <Folder Include="NPCs\Boss\Senterra\" />
+    <Folder Include="NPCs\Boss\NovaStellar\PhoenixWarrior\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MMZeroElements">
+      <HintPath>..\ModAssemblies\MMZeroElements_v0.1.dll</HintPath>
+    </Reference>
+    <Reference Include="ShopQuotesMod">
+      <HintPath>..\ModAssemblies\ShopQuotesMod_v1.0.0.1.dll</HintPath>
+    </Reference>
+    <Reference Include="WebmilioCommons">
+      <HintPath>..\ModAssemblies\WebmilioCommons_v0.5.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

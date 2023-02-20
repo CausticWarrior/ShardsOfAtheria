@@ -1,18 +1,14 @@
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ShardsOfAtheria.Tiles;
+using ShardsOfAtheria.Tiles.Crafting;
 
 namespace ShardsOfAtheria.Items.Placeable
 {
-	public class PalladiumWorkbenchItem : ModItem
+    public class PalladiumWorkbenchItem : ModItem
 	{
 		public override void SetStaticDefaults() 
 		{
-			DisplayName.SetDefault("Palladium Workbench");
-			Tooltip.SetDefault("Used to completely skip having to gather mythril ore");
-
-			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+			SacrificeTotal = 1;
 		}
 
 		public override void SetDefaults()

@@ -1,8 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using ShardsOfAtheria.Buffs;
-using ShardsOfAtheria.Projectiles.NPCProj;
+﻿using MMZeroElements;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Projectiles.Other
@@ -11,9 +8,8 @@ namespace ShardsOfAtheria.Projectiles.Other
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Spin Skull");
+            ProjectileElements.Metal.Add(Type);
         }
-
         public override void SetDefaults()
         {
             Projectile.width = 80;

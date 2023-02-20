@@ -1,80 +1,59 @@
-using Terraria;
-using Terraria.GameContent.Creative;
-using Terraria.ID;
-using Terraria.ModLoader;
-using ShardsOfAtheria.Projectiles.Weapon.Melee.GenesisRagnarok;
-using Terraria.DataStructures;
 using Microsoft.Xna.Framework;
+using MMZeroElements;
+using ShardsOfAtheria.Items.Materials;
+using ShardsOfAtheria.Players;
+using ShardsOfAtheria.Projectiles.Weapon.Melee.GenesisRagnarok;
+using ShardsOfAtheria.Utilities;
 using System;
-using Terraria.ModLoader.IO;
 using System.Collections.Generic;
+using Terraria;
+using Terraria.DataStructures;
+using Terraria.ID;
+using Terraria.Localization;
+using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Items.Weapons.Melee
 {
+    [AutoloadEquip(EquipType.Shield)]
     public class GenesisAndRagnarok : ModItem
     {
         public int combo = 0;
-        public int comboTimer;
-        public int upgrades = 0;
-
-        public override void OnCreate(ItemCreationContext context)
-        {
-            upgrades = 0;
-        }
-
-        public override void SaveData(TagCompound tag)
-        {
-            tag["upgrades"] = upgrades;
-        }
-
-        public override void LoadData(TagCompound tag)
-        {
-            if (tag.ContainsKey("upgrades"))
-                upgrades = tag.GetInt("upgrades");
-        }
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Genesis and Ragnarok");
-            Tooltip.SetDefault("If an attack is not followed up after an attack, the combo will reset\n" +
-                "Use RMB to bring up a shield, release RMB to throw the shield\n" +
-                "This shield grants 20 defense and is capable of parrying and reflecting some projectiles");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+            SacrificeTotal = 1;
+            WeaponElements.Ice.Add(Type);
+            WeaponElements.Fire.Add(Type);
+            WeaponElements.Electric.Add(Type);
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
+            ShardsPlayer shardsPlayer = Main.LocalPlayer.ShardsOfAtheria();
+            int upgrades = shardsPlayer.genesisRagnarockUpgrades;
             if (upgrades == 0)
             {
-                tooltips.Add(new TooltipLine(Mod, "Tooltip", "Preforms a combo of a spear thrust and whip swing"));
+                tooltips.Add(new TooltipLine(Mod, "Tooltip", Language.GetTextValue("Mods.ShardsOfAtheria.ItemTooltip.GenesisAndRagnarokBase")));
             }
             if (upgrades == 1)
             {
-                tooltips.Add(new TooltipLine(Mod, "Tooltip", "Preforms a combo of a spear thrust, whip swing and spear throw"));
+                tooltips.Add(new TooltipLine(Mod, "Tooltip", Language.GetTextValue("Mods.ShardsOfAtheria.ItemTooltip.GenesisAndRagnarokUpgrade1")));
             }
             if (upgrades == 2)
             {
-                tooltips.Add(new TooltipLine(Mod, "Tooltip", "Preforms a combo of a spear thrust, whip swing and spear throw\n" +
-                    "Able to swing shield with LMB before it returns"));
+                tooltips.Add(new TooltipLine(Mod, "Tooltip", Language.GetTextValue("Mods.ShardsOfAtheria.ItemTooltip.GenesisAndRagnarokUpgrade2")));
             }
             if (upgrades == 3)
             {
-                tooltips.Add(new TooltipLine(Mod, "Tooltip", "Preforms a combo of a spear thrust, whip swing and spear throw\n" +
-                    "Able to swing shield with LMB before it returns\n" +
-                    "Attacks set enemies on fire"));
+                tooltips.Add(new TooltipLine(Mod, "Tooltip", Language.GetTextValue("Mods.ShardsOfAtheria.ItemTooltip.GenesisAndRagnarokUpgrade3")));
             }
             if (upgrades == 4)
             {
-                tooltips.Add(new TooltipLine(Mod, "Tooltip", "Preforms a combo of a spear thrust, whip swing, spear throw, and sword swing\n" +
-                    "Able to swing shield with LMB before it returns\n" +
-                    "Attacks set enemies on fire"));
+                tooltips.Add(new TooltipLine(Mod, "Tooltip", Language.GetTextValue("Mods.ShardsOfAtheria.ItemTooltip.GenesisAndRagnarokUpgrade4")));
             }
             if (upgrades == 5)
             {
-                tooltips.Add(new TooltipLine(Mod, "Tooltip", "Preforms a combo of a spear thrust, whip swing, spear throw, and sword swing\n" +
-                    "Able to swing shield with LMB before it fully returns\n" +
-                    "Attacks inflict frostburn and create extra ice projectiles"));
+                tooltips.Add(new TooltipLine(Mod, "Tooltip", Language.GetTextValue("Mods.ShardsOfAtheria.ItemTooltip.GenesisAndRagnarokUpgrade5")));
             }
         }
 
@@ -104,29 +83,43 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
         {
             CreateRecipe()
                 .AddIngredient(ItemID.HellstoneBar, 18)
-                .AddRecipeGroup(SoARecipes.EvilMaterial, 10)
+                .AddIngredient(ModContent.ItemType<ChargedFeather>(), 7)
                 .AddTile(TileID.Anvils)
                 .Register();
-        }
 
-        public override void HoldItem(Player player)
-        {
-            int comboTimerMax = 60;
-            // If the item is not being used, continue
-            if (player.itemAnimation == 0)
-            {
-                // If combo is not the spear, decrement the timer
-                if (combo > 0)
-                    comboTimer--;
+            CreateRecipe()
+                .AddCondition(NetworkText.FromKey("Mods.ShardsOfAtheria.RecipeConditions.Upgrade"), r => false)
+                .AddIngredient(ModContent.ItemType<GenesisAndRagnarok>())
+                .AddIngredient(ModContent.ItemType<MemoryFragment>())
+                .Register();
 
-                // If the timer is 0, reset the timer and combo
-                if (comboTimer == 0)
-                {
-                    comboTimer = comboTimerMax;
-                    combo = 0;
-                }
-            }
-            else comboTimer = comboTimerMax;
+            CreateRecipe()
+                .AddCondition(NetworkText.FromKey("Mods.ShardsOfAtheria.RecipeConditions.Upgrade"), r => false)
+                .AddIngredient(ModContent.ItemType<GenesisAndRagnarok>())
+                .AddIngredient(ModContent.ItemType<MemoryFragment>())
+                .AddIngredient(ItemID.ChlorophyteBar, 14)
+                .Register();
+
+            CreateRecipe()
+                .AddCondition(NetworkText.FromKey("Mods.ShardsOfAtheria.RecipeConditions.Upgrade"), r => false)
+                .AddIngredient(ModContent.ItemType<GenesisAndRagnarok>())
+                .AddIngredient(ModContent.ItemType<MemoryFragment>())
+                .AddIngredient(ItemID.BeetleHusk, 16)
+                .Register();
+
+            CreateRecipe()
+                .AddCondition(NetworkText.FromKey("Mods.ShardsOfAtheria.RecipeConditions.Upgrade"), r => false)
+                .AddIngredient(ModContent.ItemType<GenesisAndRagnarok>())
+                .AddIngredient(ModContent.ItemType<MemoryFragment>())
+                .AddIngredient(ItemID.FragmentSolar, 18)
+                .Register();
+
+            CreateRecipe()
+                .AddCondition(NetworkText.FromKey("Mods.ShardsOfAtheria.RecipeConditions.Upgrade"), r => false)
+                .AddIngredient(ModContent.ItemType<GenesisAndRagnarok>())
+                .AddIngredient(ModContent.ItemType<MemoryFragment>())
+                .AddIngredient(ItemID.LunarBar, 20)
+                .Register();
         }
 
         public override bool AltFunctionUse(Player player)
@@ -136,6 +129,9 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
 
         public override bool CanUseItem(Player player)
         {
+            ShardsPlayer shardsPlayer = Main.LocalPlayer.ShardsOfAtheria();
+            int upgrades = shardsPlayer.genesisRagnarockUpgrades;
+
             if (player.altFunctionUse == 2)
             {
                 Item.UseSound = SoundID.Item15;
@@ -152,29 +148,35 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
                 }
                 else
                 {
-                    if (combo == 0)
+                    switch (combo)
                     {
-                        Item.shoot = ModContent.ProjectileType<Genesis_Spear>();
-                        Item.shootSpeed = 4.5f;
-                        Item.UseSound = SoundID.Item1;
-                    }
-                    if (combo == 1)
-                    {
-                        Item.shoot = ModContent.ProjectileType<Genesis_Whip>();
-                        Item.shootSpeed = 24f;
-                        Item.UseSound = SoundID.Item116;
-                    }
-                    if (combo == 2 && upgrades >= 1)
-                    {
-                        Item.shoot = ModContent.ProjectileType<Genesis_Spear2>();
-                        Item.shootSpeed = 30f;
-                        Item.UseSound = SoundID.Item71;
-                    }
-                    if (combo == 3 && upgrades >= 4)
-                    {
-                        Item.shoot = ModContent.ProjectileType<Genesis_Sword>();
-                        Item.shootSpeed = 30f;
-                        Item.UseSound = SoundID.DD2_MonkStaffSwing;
+                        case 0:
+                            Item.shoot = ModContent.ProjectileType<Genesis_Spear>();
+                            Item.shootSpeed = 3.7f;
+                            Item.UseSound = SoundID.Item1;
+                            break;
+                        case 1:
+                            Item.shoot = ModContent.ProjectileType<Genesis_Whip>();
+                            Item.shootSpeed = 24f;
+                            Item.UseSound = SoundID.Item116;
+                            break;
+                        case 2:
+                            if (upgrades >= 1)
+                            {
+                                Item.shoot = ModContent.ProjectileType<Genesis_Spear2>();
+                                Item.shootSpeed = 30f;
+                                Item.UseSound = SoundID.Item71;
+                            }
+                            break;
+                        case 3:
+                        case 4:
+                            if (upgrades >= 4)
+                            {
+                                Item.shoot = ModContent.ProjectileType<Genesis_Sword>();
+                                Item.shootSpeed = 1f;
+                                Item.UseSound = SoundID.DD2_MonkStaffSwing;
+                            }
+                            break;
                     }
                 }
             }
@@ -186,9 +188,12 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
 
         public override bool? UseItem(Player player)
         {
+            ShardsPlayer shardsPlayer = player.ShardsOfAtheria();
+            int upgrades = shardsPlayer.genesisRagnarockUpgrades;
+
             int comboExtra = upgrades >= 1 ? 1 : 0;
-            int comboExtra2 = upgrades >= 4 ? 1 : 0;
-            if (combo == 1 + comboExtra + comboExtra2)
+            int comboExtra2 = upgrades >= 4 ? 2 : 0;
+            if (combo >= 1 + comboExtra + comboExtra2)
                 combo = 0;
             else combo++;
             return true;
@@ -196,6 +201,9 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
 
         public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
         {
+            ShardsPlayer shardsPlayer = player.ShardsOfAtheria();
+            int upgrades = shardsPlayer.genesisRagnarockUpgrades;
+
             if (upgrades == 1)
                 damage += .5f;
             if (upgrades == 2)
@@ -208,12 +216,17 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
                 damage += 5.4f;
         }
 
+        public override void HoldItem(Player player)
+        {
+            player.ShardsOfAtheria().showRagnarok = true;
+        }
+
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (type == ModContent.ProjectileType<Genesis_Whip>())
             {
                 float ai4 = (Main.rand.NextFloat() - 0.5f) * ((float)Math.PI / 4f);
-                Projectile.NewProjectile(source, player.Center, Vector2.Normalize(Main.MouseWorld - player.Center), type, damage, knockback, player.whoAmI, 0f, upgrades >= 2 ? 0 : ai4);
+                Projectile.NewProjectile(source, position, velocity, type, damage, knockback, player.whoAmI, 0f, ai4);
                 return false;
             }
             if (player.ownedProjectileCounts[ModContent.ProjectileType<RagnarokProj2>()] > 0)

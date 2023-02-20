@@ -1,12 +1,17 @@
 ﻿using Microsoft.Xna.Framework;
+using MMZeroElements;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Projectiles.Weapon.Melee
 {
     public class BloodCutter : ModProjectile
     {
+        public override void SetStaticDefaults()
+        {
+            ProjectileElements.Metal.Add(Type);
+        }
+
         public override void SetDefaults()
         {
             Projectile.width = 24;

@@ -1,27 +1,27 @@
 using Microsoft.Xna.Framework;
-using ShardsOfAtheria.Items.SlayerItems;
+using MMZeroElements;
 using ShardsOfAtheria.Items.Weapons.Areus;
 using ShardsOfAtheria.Projectiles.Weapon.Melee;
-using ShardsOfAtheria.Projectiles.Weapon.Melee.Zenova;
 using Terraria;
-using Terraria.GameContent.Creative;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Items.Weapons.Melee
 {
-    public class Zenova : ModItem
+	public class Zenova : ModItem
 	{
-		public override void SetStaticDefaults() 
+		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("Ignores a moderate amount of defense\n" +
-				"'Zenith's older sister'\n" +
-				"'RANDOM BULLS**T GO!'");
-
-			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+			ItemID.Sets.ItemsThatAllowRepeatedRightClick[Type] = true;
+			SacrificeTotal = 1;
+			WeaponElements.Metal.Add(Type);
+			WeaponElements.Fire.Add(Type);
+			WeaponElements.Ice.Add(Type);
+			WeaponElements.Electric.Add(Type);
 		}
 
-		public override void SetDefaults() 
+		public override void SetDefaults()
 		{
 			Item.width = 76;
 			Item.height = 76;
@@ -31,10 +31,11 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
 			Item.knockBack = 3;
 			Item.crit = 8;
 
-			Item.useTime = 6;
-			Item.useAnimation = 6;
+			Item.useTime = 5;
+			Item.useAnimation = 25;
+			Item.reuseDelay = 10;
 			Item.useStyle = ItemUseStyleID.Swing;
-			Item.UseSound = SoundID.Item1;
+			Item.UseSound = SoundID.DD2_SkyDragonsFuryShot;
 			Item.autoReuse = true;
 			Item.noMelee = true;
 			Item.noUseGraphic = true;
@@ -46,7 +47,7 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
 			Item.ArmorPenetration = 37;
 		}
 
-		public override void AddRecipes() 
+		public override void AddRecipes()
 		{
 			CreateRecipe()
 				.AddIngredient(ItemID.WoodenSword)
@@ -60,16 +61,35 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
 				.Register();
 		}
 
-        // How can I choose between several projectiles randomly?
-        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
+		public override bool AltFunctionUse(Player player)
 		{
-			// Here we randomly set type to either the original (as defined by the ammo), a vanilla projectile, or a mod Projectile.
-			type = Main.rand.Next(new int[] { type, ModContent.ProjectileType<ZenovaDaybreak>(), ModContent.ProjectileType<ZenovaBoneJavelin>(),
-				ModContent.ProjectileType<ZenovaProjectile>(), ModContent.ProjectileType<ZenovaAreusSword>(),
-				ModContent.ProjectileType<ZenovaBreakerBlade>(), ModContent.ProjectileType<ZenovaChlorophyteSaber>(),
-				ModContent.ProjectileType<ZenovaSatanlance>(), ModContent.ProjectileType<ZenovaWoodenSword>(),
-				ModContent.ProjectileType<ElectricBlade>(), ModContent.ProjectileType<ZenovaLostNail>()});
-			velocity = velocity.RotatedByRandom(MathHelper.ToRadians(5));
+			return true;
 		}
-    }
+
+		public override bool CanUseItem(Player player)
+		{
+			if (player.altFunctionUse == 2)
+			{
+				Item.useTime = 5;
+				Item.useAnimation = 5;
+				Item.reuseDelay = 0;
+			}
+			else
+			{
+				Item.useTime = 5;
+				Item.useAnimation = 25;
+				Item.reuseDelay = 10;
+			}
+			return base.CanUseItem(player);
+		}
+
+		public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
+		{
+			SoundEngine.PlaySound(Item.UseSound);
+			if (player.altFunctionUse != 2)
+			{
+				velocity = velocity.RotatedByRandom(MathHelper.ToRadians(5));
+			}
+		}
+	}
 }

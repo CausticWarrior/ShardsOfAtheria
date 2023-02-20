@@ -1,7 +1,5 @@
 using ShardsOfAtheria.Tiles;
 using Terraria;
-using Terraria.DataStructures;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -9,14 +7,9 @@ namespace ShardsOfAtheria.Items.Placeable
 {
 	public class AreusShard : ModItem
 	{
-		public override void SetStaticDefaults() 
+		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("A pale blue shard of limitless electricity");
-
-			Main.RegisterItemAnimation(Item.type, new DrawAnimationVertical(5, 11));
-			ItemID.Sets.AnimatesAsSoul[Item.type] = true;
-
-			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 100;
+			SacrificeTotal = 100;
 		}
 
 		public override void SetDefaults()
@@ -37,5 +30,5 @@ namespace ShardsOfAtheria.Items.Placeable
 
 			Item.createTile = ModContent.TileType<AreusOre>();
 		}
-    }
+	}
 }

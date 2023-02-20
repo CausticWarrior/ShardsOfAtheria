@@ -1,8 +1,8 @@
 using Microsoft.Xna.Framework;
+using MMZeroElements;
 using ShardsOfAtheria.Projectiles.Weapon.Melee;
 using Terraria;
 using Terraria.DataStructures;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,9 +12,8 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("'Rains feather blades on your enemies!'");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+            SacrificeTotal = 1;
+            WeaponElements.Electric.Add(Type);
         }
 
         public override void SetDefaults()
@@ -26,14 +25,14 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
             Item.DamageType = DamageClass.Melee;
             Item.knockBack = 6;
             Item.crit = 6;
-            
+
             Item.useTime = 15;
             Item.useAnimation = 15;
             Item.useStyle = ItemUseStyleID.Swing;
             Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
 
-            Item.shootSpeed = 8;
+            Item.shootSpeed = 16;
             Item.rare = ItemRarityID.Pink;
             Item.value = Item.sellPrice(0, 3, 50);
             Item.shoot = ModContent.ProjectileType<FeatherBladeFriendly>();
@@ -41,12 +40,12 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
 
         public override void AddRecipes()
         {
-			CreateRecipe()
-				.AddIngredient(ModContent.ItemType<ValkyrieBlade>())
-				.AddIngredient(ItemID.SpectreBar, 10)
-				.AddIngredient(ItemID.FallenStar, 20)
-				.AddTile(TileID.MythrilAnvil)
-				.Register();
+            CreateRecipe()
+                .AddIngredient(ModContent.ItemType<ValkyrieBlade>())
+                .AddIngredient(ItemID.SpectreBar, 10)
+                .AddIngredient(ItemID.FallenStar, 20)
+                .AddTile(TileID.MythrilAnvil)
+                .Register();
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)

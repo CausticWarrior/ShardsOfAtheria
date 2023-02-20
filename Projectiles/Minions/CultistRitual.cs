@@ -1,7 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using ShardsOfAtheria.Items.SlayerItems;
+using ShardsOfAtheria.Items.SoulCrystals;
+using ShardsOfAtheria.Items.Tools.Misc;
 using ShardsOfAtheria.Players;
 using Terraria;
 using Terraria.Audio;
@@ -26,8 +27,7 @@ namespace ShardsOfAtheria.Projectiles.Minions
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Cultist Ritual");
-            Main.projFrames[Projectile.type] = 2;
+            Main.projPet[Projectile.type] = true; // Denotes that this projectile is a pet or minion
         }
 
         public override void SetDefaults()
@@ -48,50 +48,25 @@ namespace ShardsOfAtheria.Projectiles.Minions
                 Projectile.Kill();
 
             Projectile.Center = owner.Center;
-            if (owner.GetModPlayer<SynergyPlayer>().lunaticLordSynergy)
-                Projectile.frame = 1;
-            else Projectile.frame = 0;
-
             if (Main.myPlayer == Projectile.owner)
             {
                 if (Main.mouseLeft && !Main.LocalPlayer.mouseInterface && owner.HeldItem.type != ModContent.ItemType<SoulExtractingDagger>())
                 {
                     Projectile.ai[1]++;
-                    if (owner.GetModPlayer<SynergyPlayer>().lunaticLordSynergy)
+                    if (Projectile.ai[1] == 1)
                     {
-                        if (Projectile.ai[1] == 1)
+                        SoundEngine.PlaySound(SoundID.Item120.WithVolumeScale(0.5f));
+                        if (owner.GetModPlayer<SlayerPlayer>().lunaticCircleFragments > 1)
                         {
-                            SoundEngine.PlaySound(SoundID.Item103);
-                            if (owner.GetModPlayer<SlayerPlayer>().lunaticCircleFragments > 1)
+                            float numberProjectiles = owner.GetModPlayer<SlayerPlayer>().lunaticCircleFragments;
+                            float rotation = MathHelper.ToRadians(20);
+                            for (int i = 0; i < numberProjectiles; i++)
                             {
-                                float numberProjectiles = owner.GetModPlayer<SlayerPlayer>().lunaticCircleFragments;
-                                float rotation = MathHelper.ToRadians(20);
-                                for (int i = 0; i < numberProjectiles; i++)
-                                {
-                                    Vector2 perturbedSpeed = Vector2.Normalize(Main.MouseWorld - Projectile.Center).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1)));
-                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed * 16, ModContent.ProjectileType<MadnessFragment>(), 70, 1, owner.whoAmI);
-                                }
+                                Vector2 perturbedSpeed = Vector2.Normalize(Main.MouseWorld - Projectile.Center).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1)));
+                                Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed * 16, ModContent.ProjectileType<IceFragment>(), 60, 1, owner.whoAmI);
                             }
-                            else Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Normalize(Main.MouseWorld - Projectile.Center) * 16, ModContent.ProjectileType<MadnessFragment>(), 90, 1, owner.whoAmI);
                         }
-                    }
-                    else
-                    {
-                        if (Projectile.ai[1] == 1)
-                        {
-                            SoundEngine.PlaySound(SoundID.Item120);
-                            if (owner.GetModPlayer<SlayerPlayer>().lunaticCircleFragments > 1)
-                            {
-                                float numberProjectiles = owner.GetModPlayer<SlayerPlayer>().lunaticCircleFragments;
-                                float rotation = MathHelper.ToRadians(20);
-                                for (int i = 0; i < numberProjectiles; i++)
-                                {
-                                    Vector2 perturbedSpeed = Vector2.Normalize(Main.MouseWorld - Projectile.Center).RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1)));
-                                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, perturbedSpeed * 16, ModContent.ProjectileType<IceFragment>(), 60, 1, owner.whoAmI);
-                                }
-                            }
-                            else Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Normalize(Main.MouseWorld - Projectile.Center) * 16, ModContent.ProjectileType<IceFragment>(), 90, 1, owner.whoAmI);
-                        }
+                        else Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Normalize(Main.MouseWorld - Projectile.Center) * 16, ModContent.ProjectileType<IceFragment>(), 90, 1, owner.whoAmI);
                     }
                     if (Projectile.ai[1] >= 60)
                         Projectile.ai[1] = 0;
@@ -108,7 +83,7 @@ namespace ShardsOfAtheria.Projectiles.Minions
         // This is the "active check", makes sure the minion is alive while the player is alive, and despawns if not
         private bool CheckActive(Player owner)
         {
-            if (owner.dead || !owner.active || !owner.GetModPlayer<SlayerPlayer>().LunaticSoul)
+            if (owner.dead || !owner.active || !owner.GetModPlayer<SlayerPlayer>().soulCrystals.Contains(ModContent.ItemType<LunaticSoulCrystal>()))
                 return false;
             else Projectile.timeLeft = 2;
             return true;

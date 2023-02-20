@@ -1,27 +1,24 @@
 ﻿using Microsoft.Xna.Framework;
+using ShardsOfAtheria.Utilities;
 using Terraria;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Items.Accessories.GemCores
 {
-	public class AmethystCore_Greater : ModItem
-	{
-		public override void SetStaticDefaults()
-		{
-            DisplayName.SetDefault("Greater Amethyst Core");
-			Tooltip.SetDefault("Gives a dash to the wearer\n" +
-                "Immunity to 'Ichor' and 'Cursed Inferno'");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+    public class AmethystCore_Greater : ModItem
+    {
+        public override void SetStaticDefaults()
+        {
+            SacrificeTotal = 1;
         }
 
-		public override void SetDefaults()
-		{
-			Item.width = 32;
-			Item.height = 32;
+        public override void SetDefaults()
+        {
+            Item.width = 32;
+            Item.height = 32;
             Item.accessory = true;
+            Item.canBePlacedInVanityRegardlessOfConditions = true;
 
             Item.rare = ItemRarityID.Orange;
             Item.value = Item.sellPrice(0, 2, 25);
@@ -32,12 +29,14 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
             CreateRecipe()
                .AddIngredient(ModContent.ItemType<AmethystCore>())
                 .AddIngredient(ItemID.HallowedBar, 5)
-               .AddTile(TileID.Hellforge)
+               .AddTile(TileID.MythrilAnvil)
                .Register();
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
-		{
+        {
+            player.ShardsOfAtheria().amethystMask = !hideVisual;
+
             AmethystDashPlayer mp = player.GetModPlayer<AmethystDashPlayer>();
             mp.DashVelocity = 13f;
             AmethystDashPlayer.MAX_DASH_DELAY = 50;

@@ -1,9 +1,5 @@
-﻿using Microsoft.Xna.Framework;
-using ShardsOfAtheria.Buffs;
-using ShardsOfAtheria.Projectiles.NPCProj;
+﻿using MMZeroElements;
 using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Projectiles.Other
@@ -12,8 +8,9 @@ namespace ShardsOfAtheria.Projectiles.Other
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shadow Tendrils");
             Main.projFrames[Projectile.type] = 3;
+            ProjectileElements.Fire.Add(Type);
+            ProjectileElements.Electric.Add(Type);
         }
 
         public override void SetDefaults()

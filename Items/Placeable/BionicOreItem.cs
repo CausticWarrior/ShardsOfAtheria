@@ -1,20 +1,17 @@
+using ShardsOfAtheria.Tiles;
 using Terraria;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ShardsOfAtheria.Tiles;
 
 namespace ShardsOfAtheria.Items.Placeable
 {
 	public class BionicOreItem : ModItem
 	{
-		public override void SetStaticDefaults() 
+		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Bionic Ore");
-			Tooltip.SetDefault("It pulsates as if it has a heartbeat...");
 			ItemID.Sets.ItemIconPulse[Item.type] = true;
 
-			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 100;
+			SacrificeTotal = 100;
 		}
 
 		public override void SetDefaults()
@@ -34,5 +31,5 @@ namespace ShardsOfAtheria.Items.Placeable
 			Item.value = Item.sellPrice(silver: 8);
 			Item.rare = ItemRarityID.Blue;
 		}
-    }
+	}
 }

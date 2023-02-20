@@ -1,23 +1,15 @@
-﻿using ShardsOfAtheria.Players;
+﻿using ShardsOfAtheria.Utilities;
 using Terraria;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Items.Accessories.GemCores
 {
-    public class RubyCore_Super : ModItem
+	public class RubyCore_Super : ModItem
 	{
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Super Ruby Core");
-			Tooltip.SetDefault("15% increased damage\n" +
-				"Increased knockback, attack speed and melee size\n" +
-				"Attacks inflict 'Cursed Inferno' and 'Ichor'\n" +
-				"Immune to damage reducing and anti attacking debuffs\n" +
-				"Melee weapons autoswing");
-
-			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+			SacrificeTotal = 1;
 		}
 
 		public override void SetDefaults()
@@ -25,6 +17,7 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 			Item.width = 32;
 			Item.height = 32;
 			Item.accessory = true;
+			Item.canBePlacedInVanityRegardlessOfConditions = true;
 
 			Item.rare = ItemRarityID.Lime;
 			Item.value = Item.sellPrice(0, 3);
@@ -42,9 +35,9 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 
 		public override void UpdateAccessory(Player player, bool hideVisual)
 		{
+			player.ShardsOfAtheria().rubyGauntlet = !hideVisual;
 			player.GetDamage(DamageClass.Generic) += .15f;
-			player.GetModPlayer<SoAPlayer>().superRubyCore = true;
-			player.autoReuseGlove = true;
+			player.ShardsOfAtheria().superRubyCore = true;
 			player.GetAttackSpeed(DamageClass.Generic) += .15f;
 			player.GetKnockback(DamageClass.Generic) += 1.5f;
 			player.meleeScaleGlove = true;

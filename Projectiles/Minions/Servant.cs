@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using ShardsOfAtheria.Buffs;
+using MMZeroElements;
+using ShardsOfAtheria.Items.SoulCrystals;
 using ShardsOfAtheria.Players;
 using System;
 using Terraria;
@@ -8,11 +9,10 @@ using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Projectiles.Minions
 {
-    public class Servant : ModProjectile
+	public class Servant : ModProjectile
 	{
 		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Servant of You");
 			// This is necessary for right-click targeting
 			ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
 
@@ -20,6 +20,7 @@ namespace ShardsOfAtheria.Projectiles.Minions
 
 			ProjectileID.Sets.MinionSacrificable[Projectile.type] = true; // This is needed so your minion can properly spawn when summoned and replaced when other minions are summoned
 			ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true; // Make the cultist resistant to this projectile, as it's resistant to all homing projectiles.
+			ProjectileElements.Ice.Add(Type);
 		}
 
 		public sealed override void SetDefaults()
@@ -59,16 +60,12 @@ namespace ShardsOfAtheria.Projectiles.Minions
 			SearchForTargets(owner, out bool foundTarget, out float distanceFromTarget, out Vector2 targetCenter);
 			Movement(foundTarget, distanceFromTarget, targetCenter, distanceToIdlePosition, vectorToIdlePosition);
 			Visuals();
-			if (owner.GetModPlayer<SlayerPlayer>().BrainSoul && owner.GetModPlayer<SynergyPlayer>().brainEyeSynergy)
-			{
-				owner.AddBuff(ModContent.BuffType<CreeperShield>(), 2);
-			}
 		}
 
 		// This is the "active check", makes sure the minion is alive while the player is alive, and despawns if not
 		private bool CheckActive(Player owner)
 		{
-			if (owner.dead || !owner.active || !owner.GetModPlayer<SlayerPlayer>().EyeSoul)
+			if (Main.myPlayer == Projectile.owner && (owner.dead || !owner.active || !owner.GetModPlayer<SlayerPlayer>().soulCrystals.Contains(ModContent.ItemType<EyeSoulCrystal>())))
 				return false;
 			else Projectile.timeLeft = 2;
 			return true;
@@ -188,6 +185,7 @@ namespace ShardsOfAtheria.Projectiles.Minions
 
 		private void Movement(bool foundTarget, float distanceFromTarget, Vector2 targetCenter, float distanceToIdlePosition, Vector2 vectorToIdlePosition)
 		{
+			Projectile.netUpdate = true;
 			// Default movement parameters (here for attacking)
 			float speed = 8f;
 			float inertia = 20f;
@@ -242,6 +240,7 @@ namespace ShardsOfAtheria.Projectiles.Minions
 		private void Visuals()
 		{
 			Projectile.rotation = Projectile.velocity.ToRotation() + MathHelper.ToRadians(180);
+			Projectile.netUpdate = true;
 		}
 	}
 }

@@ -1,20 +1,22 @@
+using Microsoft.Xna.Framework;
+using ShardsOfAtheria.Globals;
+using ShardsOfAtheria.Items.Placeable;
+using ShardsOfAtheria.Players;
+using ShardsOfAtheria.Systems;
+using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ShardsOfAtheria.Items.Placeable;
-using Terraria;
-using Microsoft.Xna.Framework;
-using Terraria.GameContent.Creative;
-using ShardsOfAtheria.Items.Potions;
+using WebmilioCommons.Effects.ScreenShaking;
 
 namespace ShardsOfAtheria.Items.Weapons.Areus
 {
-    public class AreusRailgun : ModItem
+    public class AreusRailgun : OverchargeWeapon
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Tears through enemy armor");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+            SacrificeTotal = 1;
+            SoAGlobalItem.AreusWeapon.Add(Type);
         }
 
         public override void SetDefaults()
@@ -24,7 +26,7 @@ namespace ShardsOfAtheria.Items.Weapons.Areus
 
             Item.damage = 100;
             Item.DamageType = DamageClass.Ranged;
-            Item.knockBack = 4f;
+            Item.knockBack = 20f;
             Item.crit = 6;
 
             Item.useTime = 48;
@@ -33,7 +35,8 @@ namespace ShardsOfAtheria.Items.Weapons.Areus
             Item.UseSound = SoundID.Item38;
             Item.noMelee = true;
 
-            Item.shootSpeed = 16f;
+            Item.shootSpeed = 32f;
+            Item.rare = ItemRarityID.Cyan;
             Item.value = Item.sellPrice(0, 2, 25);
             Item.shoot = ItemID.PurificationPowder;
             Item.useAmmo = AmmoID.Bullet;
@@ -44,23 +47,29 @@ namespace ShardsOfAtheria.Items.Weapons.Areus
         {
             CreateRecipe()
                 .AddIngredient(ModContent.ItemType<AreusShard>(), 20)
+                .AddRecipeGroup(ShardsRecipes.Gold, 6)
                 .AddIngredient(ItemID.SoulofMight, 7)
-                .AddIngredient(ItemID.SoulofFright, 7)
                 .AddTile(TileID.MythrilAnvil)
                 .Register();
-        }
-
-        public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
-        {
-            if (player.HasBuff(ModContent.BuffType<Conductive>()))
-            {
-                damage += .15f;
-            }
         }
 
         public override Vector2? HoldoutOffset()
         {
             return new Vector2(-2, 0);
+        }
+
+        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
+        {
+            if (type == ProjectileID.Bullet)
+            {
+                type = ProjectileID.BulletHighVelocity;
+            }
+        }
+
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
+        {
+            ScreenShake.ShakeScreen(8, 60);
+            return base.Shoot(player, source, position, velocity, type, damage, knockback);
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using ShardsOfAtheria.Buffs;
-using ShardsOfAtheria.Projectiles.NPCProj;
+﻿using ShardsOfAtheria.Buffs.AnyDebuff;
+using MMZeroElements;
+using ShardsOfAtheria.Projectiles.NPCProj.Nova;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -9,9 +9,11 @@ namespace ShardsOfAtheria.Projectiles.Other
 {
     public class ElectricTrailFriendly : ModProjectile
     {
+        public override string Texture => "ShardsOfAtheria/Blank";
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Electric Trail");
+            ProjectileElements.Electric.Add(Type);
         }
 
         public override void SetDefaults()
@@ -29,6 +31,7 @@ namespace ShardsOfAtheria.Projectiles.Other
                        Projectile.velocity.X * .2f, Projectile.velocity.Y * .2f, 200, Scale: 1f);
                 dust.velocity += Projectile.velocity * 0.3f;
                 dust.velocity *= 0.2f;
+                dust.noGravity = true;
             }
         }
 

@@ -1,18 +1,19 @@
-﻿using Microsoft.Xna.Framework;
-using ShardsOfAtheria.Buffs;
-using ShardsOfAtheria.Projectiles.NPCProj;
+﻿using MMZeroElements;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
+using WebmilioCommons.Effects.ScreenShaking;
 
 namespace ShardsOfAtheria.Projectiles.Other
 {
     public class CrystalExplosion : ModProjectile
     {
+        public override string Texture => "ShardsOfAtheria/Blank";
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Crystal Explosion");
+            ProjectileElements.Metal.Add(Type);
         }
 
         public override void SetDefaults()
@@ -32,6 +33,7 @@ namespace ShardsOfAtheria.Projectiles.Other
         {
             if (Projectile.ai[0] == 0)
             {
+                ScreenShake.ShakeScreen(6, 60);
                 SoundEngine.PlaySound(SoundID.Item14);
                 Projectile.ai[0] = 1;
             }

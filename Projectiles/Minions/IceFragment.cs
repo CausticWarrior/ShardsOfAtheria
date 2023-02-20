@@ -1,16 +1,15 @@
 ﻿using Microsoft.Xna.Framework;
-using System;
+using MMZeroElements;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Projectiles.Minions
 {
     public class IceFragment : ModProjectile
-	{
+    {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ice Fragment");
+            ProjectileElements.Ice.Add(Type);
         }
 
         public override void SetDefaults()

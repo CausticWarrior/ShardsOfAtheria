@@ -1,7 +1,6 @@
-﻿using Microsoft.Xna.Framework;
-using ShardsOfAtheria.Buffs;
+﻿using ShardsOfAtheria.Buffs.NPCDebuff;
+using MMZeroElements;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Projectiles.Weapon.Melee
@@ -10,8 +9,8 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Entropy Slash");
             Main.projFrames[Projectile.type] = 3;
+            ProjectileElements.Ice.Add(Type);
         }
 
         public override void SetDefaults()
@@ -31,11 +30,11 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee
 
         public override void AI()
         {
-			if (Projectile.ai[0] == 0)
-			{
-				Projectile.spriteDirection = Main.rand.NextBool(2) ? 1 : -1;
+            if (Projectile.ai[0] == 0)
+            {
+                Projectile.spriteDirection = Main.rand.NextBool(2) ? 1 : -1;
                 Projectile.ai[0] = 1;
-			}
+            }
             if (++Projectile.frameCounter == 3)
             {
                 if (++Projectile.frame > 2)

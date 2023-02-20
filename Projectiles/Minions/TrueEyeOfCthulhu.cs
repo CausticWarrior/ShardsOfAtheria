@@ -1,7 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
-using ShardsOfAtheria.Items.SlayerItems;
+using ShardsOfAtheria.Items.SoulCrystals;
+using ShardsOfAtheria.Items.Tools.Misc;
 using ShardsOfAtheria.Players;
 using ShardsOfAtheria.Projectiles.Other;
 using Terraria;
@@ -26,7 +27,7 @@ namespace ShardsOfAtheria.Projectiles.Minions
 
 		public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("True Eye of Cthulhu");
+            Main.projPet[Projectile.type] = true; // Denotes that this projectile is a pet or minion
         }
 
         public override void SetDefaults()
@@ -45,7 +46,8 @@ namespace ShardsOfAtheria.Projectiles.Minions
 
 			if (!CheckActive(owner))
             {
-				return;
+                Projectile.Kill();
+                return;
 			}
 
 			if (Main.myPlayer == Projectile.owner)
@@ -76,7 +78,7 @@ namespace ShardsOfAtheria.Projectiles.Minions
 		// This is the "active check", makes sure the minion is alive while the player is alive, and despawns if not
 		private bool CheckActive(Player owner)
 		{
-			if (owner.dead || !owner.active || !owner.GetModPlayer<SlayerPlayer>().LordSoul)
+			if (owner.dead || !owner.active || !owner.GetModPlayer<SlayerPlayer>().soulCrystals.Contains(ModContent.ItemType<LordSoulCrystal>()))
 				return false;
 			else Projectile.timeLeft = 2;
 			return true;

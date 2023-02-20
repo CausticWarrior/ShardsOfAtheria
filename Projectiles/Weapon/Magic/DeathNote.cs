@@ -1,8 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using MMZeroElements;
 using System;
 using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Projectiles.Weapon.Magic
@@ -12,6 +11,7 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Magic
         public override void SetStaticDefaults()
         {
             Main.projFrames[Projectile.type] = 3;
+            ProjectileElements.Ice.Add(Type);
         }
 
         public override void SetDefaults()

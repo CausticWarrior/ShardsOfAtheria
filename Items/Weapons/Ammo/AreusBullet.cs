@@ -1,9 +1,10 @@
+using MMZeroElements;
+using ShardsOfAtheria.Globals;
+using ShardsOfAtheria.Items.Placeable;
+using ShardsOfAtheria.Projectiles.Weapon.Ammo;
 using Terraria;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ShardsOfAtheria.Projectiles.Weapon.Ammo;
-using ShardsOfAtheria.Items.Placeable;
 
 namespace ShardsOfAtheria.Items.Weapons.Ammo
 {
@@ -11,7 +12,9 @@ namespace ShardsOfAtheria.Items.Weapons.Ammo
     {
         public override void SetStaticDefaults()
         {
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 99;
+            SacrificeTotal = 999;
+            SoAGlobalItem.AreusWeapon.Add(Type);
+            WeaponElements.Electric.Add(Type);
         }
 
         public override void SetDefaults()
@@ -24,7 +27,7 @@ namespace ShardsOfAtheria.Items.Weapons.Ammo
             Item.consumable = true;
             Item.knockBack = 2f;
             Item.value = 1200;
-            Item.rare = ItemRarityID.Lime;
+            Item.rare = ItemRarityID.Cyan;
             Item.shoot = ModContent.ProjectileType<AreusBulletProj>();
             Item.shootSpeed = 4f;
             Item.ammo = AmmoID.Bullet;

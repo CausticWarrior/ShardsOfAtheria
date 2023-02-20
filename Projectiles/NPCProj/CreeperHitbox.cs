@@ -1,12 +1,18 @@
-﻿using Terraria;
+﻿using MMZeroElements;
+using Terraria;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using ShardsOfAtheria.Buffs;
 
 namespace ShardsOfAtheria.Projectiles.NPCProj
 {
     public class CreeperHitbox : ModProjectile
     {
+        public override string Texture => "ShardsOfAtheria/Blank";
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileElements.Ice.Add(Type);
+        }
+
         public override void SetDefaults()
         {
             Projectile.width = 34;

@@ -1,7 +1,6 @@
-using Microsoft.Xna.Framework;
+using MMZeroElements;
 using ShardsOfAtheria.Projectiles.Weapon.Magic;
 using Terraria;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,9 +10,8 @@ namespace ShardsOfAtheria.Items.Weapons.Magic
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("'I think it's broken..'");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+            SacrificeTotal = 1;
+            WeaponElements.Metal.Add(Type);
         }
 
         public override void SetDefaults()
@@ -25,27 +23,19 @@ namespace ShardsOfAtheria.Items.Weapons.Magic
             Item.DamageType = DamageClass.Magic;
             Item.knockBack = 6;
             Item.crit = 4;
-            Item.mana = 6;
 
             Item.useTime = 15;
             Item.useAnimation = 15;
-            Item.useStyle = ItemUseStyleID.Shoot;
-            Item.UseSound = SoundID.Item11;
+            Item.useStyle = ItemUseStyleID.Rapier;
+            Item.UseSound = SoundID.Item1;
             Item.autoReuse = true;
-            Item.staff[Item.type] = true;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
 
-            Item.value = Item.sellPrice(0, 1, 25);
-
-            Item.shootSpeed = 16;
+            Item.shootSpeed = 4.5f;
             Item.rare = ItemRarityID.Blue;
-            Item.shoot = ProjectileID.PurificationPowder;
-        }
-
-        public override void ModifyShootStats(Player player, ref Vector2 position, ref Vector2 velocity, ref int type, ref int damage, ref float knockback)
-        {
-            if (WorldGen.crimson)
-                type = ModContent.ProjectileType<GunCrimson>();
-            else type = ModContent.ProjectileType<GunCorruption>();
+            Item.value = Item.sellPrice(0, 1, 25);
+            Item.shoot = ModContent.ProjectileType<GunswordProj>();
         }
 
         public override void AddRecipes()

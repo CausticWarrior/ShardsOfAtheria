@@ -1,9 +1,9 @@
-﻿using ShardsOfAtheria.Items.Placeable;
-using ShardsOfAtheria.Players;
+﻿using ShardsOfAtheria.Utilities;
+using ShardsOfAtheria.Systems;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Items.Accessories
@@ -12,10 +12,7 @@ namespace ShardsOfAtheria.Items.Accessories
     {
         public override void SetStaticDefaults()
         {
-
-            Tooltip.SetDefault("Gives the user a 'phase 2' when below 50% life");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
@@ -30,14 +27,14 @@ namespace ShardsOfAtheria.Items.Accessories
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
-            player.GetModPlayer<SoAPlayer>().rushDrive = true;
+            player.ShardsOfAtheria().rushDrive = true;
         }
 
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddRecipeGroup(SoARecipes.EvilBar, 15)
-                .AddRecipeGroup(SoARecipes.EvilMaterial, 5)
+                .AddRecipeGroup(ShardsRecipes.EvilBar, 15)
+                .AddRecipeGroup(ShardsRecipes.EvilMaterial, 5)
                 .AddIngredient(ItemID.Bone, 5)
                 .AddTile(TileID.Hellforge)
                 .Register();
@@ -45,18 +42,8 @@ namespace ShardsOfAtheria.Items.Accessories
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            var list = ShardsOfAtheria.PhaseSwitch.GetAssignedKeys();
-            string keyname = "Not bound";
-
-            if (list.Count > 0)
-            {
-                keyname = list[0];
-            }
-
-            tooltips.Add(new TooltipLine(Mod, "tip", $"Press '[i:{keyname}]' to chose between two phase types:\n" +
-                "Offensive: Sacrifice half of total defense for doubled damage and 5% increased crit chance\n" +
-                "Defensive: Sacrifice half of total damage for doubled defense and 20% reduced damage\n" +
-                "Always get 20% increased movement speed"));
+            tooltips.Add(new TooltipLine(Mod, "tip", string.Format(Language.GetTextValue("Mods.ShardsOfAtheria.Common.RushDrive"),
+                    ShardsOfAtheria.PhaseSwitch.GetAssignedKeys().Count > 0 ? ShardsOfAtheria.PhaseSwitch.GetAssignedKeys()[0] : "[Unbounded Hotkey]")));
         }
     }
 }

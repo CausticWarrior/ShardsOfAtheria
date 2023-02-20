@@ -1,66 +1,68 @@
 ﻿using Microsoft.Xna.Framework;
-using ShardsOfAtheria.Buffs;
-using ShardsOfAtheria.Projectiles.Minions;
+using ShardsOfAtheria.Buffs.Cooldowns;
+using ShardsOfAtheria.Utilities;
 using System.Collections.Generic;
 using Terraria;
-using Terraria.GameContent.Creative;
 using Terraria.DataStructures;
 using Terraria.ID;
+using Terraria.Localization;
 using Terraria.ModLoader;
-using ShardsOfAtheria.Players;
+using Terraria.ModLoader.IO;
 
 namespace ShardsOfAtheria.Items.Accessories.GemCores
 {
     [AutoloadEquip(EquipType.Wings)]
-	public class MegaGemCore : ModItem
-	{
-		public override void SetStaticDefaults()
-		{
-			Tooltip.SetDefault("Counts as wings\n" +
-                "Increases max life by 100\n" +
-                "Increases damage, movement speed and attack speed by 20%\n" +
-                "Increases knockback and melee size\n" +
-                "+8 extra minion slots\n" +
-                "20% chance to dodge attacks\n" +
-                "Gives a super dash to the wearer\n" +
-                "Attacks inflict Daybroken and Betsy's Curse\n" +
-                "Melee weapons autoswing\n" +
-                "Immunity to damage dealing, damage and defense reducing, anti-healing and cold debuffs and Chaos State\n" +
-                "Grants Ironskin and Endurance when dealing damage and Wrath, Rage and Inferno when taking damage\n" +
-                "Effects of Ankh Shield, Bundle of Ballons, Frostspark Boots, Lava Waders and Shiny Stone\n" +
-                "Permanent Thorns, Regeneration, Honey, Heart Lantern, Cozy Campfire, Heartreach and Gravitation buffs\n" +
-                "Disable Gravitation in config\n" +
-                "Grants infinite flight and slow fall");
+    public class MegaGemCore : ModItem
+    {
+        bool gravitation = true;
 
-            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(2000000000, 9f, 2.5f);
+        public override void OnCreate(ItemCreationContext context)
+        {
+            gravitation = true;
+        }
 
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+        public override void SaveData(TagCompound tag)
+        {
+            tag["gravitation"] = gravitation;
+        }
+
+        public override void LoadData(TagCompound tag)
+        {
+            if (tag.ContainsKey("gravitation"))
+            {
+                gravitation = tag.GetBool("gravitation");
+            }
+        }
+
+        public override void SetStaticDefaults()
+        {
+            ArmorIDs.Wing.Sets.Stats[Item.wingSlot] = new WingStats(210, 9f, 2.5f, true, 1f, 1.5f);
+
+            SacrificeTotal = 1;
         }
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            var list = ShardsOfAtheria.EmeraldTeleportKey.GetAssignedKeys();
-            string keyname = "Not bound";
-
-            if (list.Count > 0)
-            {
-                keyname = list[0];
-            }
-
-            tooltips.Add(new TooltipLine(Mod, "Teleport", $"Allows teleportation on press of '[i:{keyname}]'"));
+            tooltips.Add(new TooltipLine(Mod, "Teleport", string.Format(Language.GetTextValue("Mods.ShardsOfAtheria.Common.TeleportOnKeyPress"),
+                    ShardsOfAtheria.EmeraldTeleportKey.GetAssignedKeys().Count > 0 ? ShardsOfAtheria.EmeraldTeleportKey.GetAssignedKeys()[0] : "[Unbounded Hotkey]")));
         }
 
         public override void SetDefaults()
-		{
-			Item.width = 32;
-			Item.height = 32;
+        {
+            Item.width = 32;
+            Item.height = 32;
             Item.accessory = true;
+            Item.canBePlacedInVanityRegardlessOfConditions = true;
 
-            Item.defense = 50;
+            Item.useStyle = ItemUseStyleID.HoldUp;
+            Item.useTime = 10;
+            Item.useAnimation = 10;
+
+            Item.defense = 25;
 
             Item.rare = ItemRarityID.Red;
             Item.value = Item.sellPrice(0, 3);
-		}
+        }
 
         public override void AddRecipes()
         {
@@ -77,6 +79,12 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
                 .Register();
         }
 
+        public override bool? UseItem(Player player)
+        {
+            gravitation = !gravitation;
+            return true;
+        }
+
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
             AmethystDashPlayerII mp = player.GetModPlayer<AmethystDashPlayerII>();
@@ -84,11 +92,22 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
             AmethystDashPlayerII.MAX_DASH_DELAY = 50;
             AmethystDashPlayerII.MAX_DASH_TIMER = 35;
 
+            player.ShardsOfAtheria().amethystMask = !hideVisual;
+            player.ShardsOfAtheria().diamanodShield = !hideVisual;
+            player.ShardsOfAtheria().emeraldWings = player.velocity.Y != 0 || !hideVisual;
+            player.ShardsOfAtheria().rubyGauntlet = !hideVisual;
+            player.ShardsOfAtheria().sapphireSpirit = !hideVisual;
+            player.ShardsOfAtheria().topazNecklace = !hideVisual;
+
             //Bundle of Balloons
             player.hasJumpOption_Cloud = true;
             player.hasJumpOption_Blizzard = true;
             player.hasJumpOption_Sandstorm = true;
             player.jumpBoost = true;
+
+            // Charm of Myths
+            player.pStone = true;
+            player.lifeRegen += 1;
 
             //Frostspark Boots
             player.accRunSpeed = 6.75f;
@@ -101,7 +120,6 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
             player.fireWalk = true;
 
             //Fire Gauntlet
-            player.autoReuseGlove = true;
             player.GetAttackSpeed(DamageClass.Generic) += .20f;
             player.GetKnockback(DamageClass.Generic) += 2;
             player.meleeScaleGlove = true;
@@ -110,23 +128,20 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
             player.panic = true;
             player.accFlipper = true;
 
-            player.shinyStone = true;
-
             player.AddBuff(BuffID.Thorns, 2);
-            player.AddBuff(BuffID.Regeneration, 2);
-            player.AddBuff(BuffID.Honey, 2);
             player.AddBuff(BuffID.Campfire, 2);
             player.AddBuff(BuffID.HeartLamp, 2);
-            if (ModContent.GetInstance<ConfigClientSide>().megaGemCoreGrav)
+            if (gravitation)
+            {
                 player.AddBuff(BuffID.Gravitation, 2);
+            }
 
-            player.GetModPlayer<SoAPlayer>().megaGemCore = true;
+            player.ShardsOfAtheria().megaGemCore = true;
 
             player.GetDamage(DamageClass.Generic) += .2f;
             player.maxMinions += 8;
             player.statLifeMax2 += 100;
-            player.GetModPlayer<SoAPlayer>().superEmeraldCore = true;
-            player.GetModPlayer<SoAPlayer>().megaGemCore = true;
+            player.ShardsOfAtheria().superEmeraldCore = true;
 
             player.buffImmune[BuffID.Venom] = true;
             player.buffImmune[BuffID.OnFire] = true;
@@ -136,35 +151,10 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
             player.buffImmune[BuffID.Frozen] = true;
             player.buffImmune[BuffID.WitheredArmor] = true;
             player.buffImmune[BuffID.Ichor] = true;
-            player.buffImmune[BuffID.ChaosState] = true;
             player.buffImmune[BuffID.MoonLeech] = true;
-            player.buffImmune[BuffID.PotionSickness] = true;
             player.buffImmune[ModContent.BuffType<HeartBreak>()] = true;
 
-            //Royal Gel
-            player.npcTypeNoAggro[1] = true;
-            player.npcTypeNoAggro[16] = true;
-            player.npcTypeNoAggro[59] = true;
-            player.npcTypeNoAggro[71] = true;
-            player.npcTypeNoAggro[81] = true;
-            player.npcTypeNoAggro[138] = true;
-            player.npcTypeNoAggro[121] = true;
-            player.npcTypeNoAggro[122] = true;
-            player.npcTypeNoAggro[141] = true;
-            player.npcTypeNoAggro[147] = true;
-            player.npcTypeNoAggro[183] = true;
-            player.npcTypeNoAggro[184] = true;
-            player.npcTypeNoAggro[204] = true;
-            player.npcTypeNoAggro[225] = true;
-            player.npcTypeNoAggro[244] = true;
-            player.npcTypeNoAggro[302] = true;
-            player.npcTypeNoAggro[333] = true;
-            player.npcTypeNoAggro[335] = true;
-            player.npcTypeNoAggro[334] = true;
-            player.npcTypeNoAggro[336] = true;
-            player.npcTypeNoAggro[537] = true;
-
-            //Ankh Shield
+            // Ankh Shield
             player.buffImmune[BuffID.Poisoned] = true;
             player.buffImmune[BuffID.Bleeding] = true;
             player.buffImmune[BuffID.Darkness] = true;

@@ -1,6 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
-using ShardsOfAtheria.Buffs;
+using MMZeroElements;
+using ShardsOfAtheria.Buffs.Cooldowns;
+using ShardsOfAtheria.Globals;
 using ShardsOfAtheria.Items.Weapons.Melee;
+using ShardsOfAtheria.Players;
+using ShardsOfAtheria.Utilities;
 using System;
 using Terraria;
 using Terraria.Audio;
@@ -11,6 +15,13 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee.GenesisRagnarok
 {
     public class Ragnarok_Shield : ModProjectile
     {
+        public override void SetStaticDefaults()
+        {
+            ProjectileElements.Ice.Add(Type);
+            ProjectileElements.Fire.Add(Type);
+            ProjectileElements.Electric.Add(Type);
+        }
+
         public override void SetDefaults()
         {
             Projectile.width = 64;
@@ -61,38 +72,43 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee.GenesisRagnarok
         {
             Rectangle hitbox = new Rectangle((int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height);
             Player player = Main.player[Projectile.owner];
+            ShardsPlayer shardsPlayer = player.ShardsOfAtheria();
+            int upgrades = shardsPlayer.genesisRagnarockUpgrades;
 
             for (int i = 0; i < Main.maxProjectiles; i++)
             {
                 Projectile reflProjectile = Main.projectile[i];
                 if (hitbox.Intersects(reflProjectile.getRect()))
                 {
-                    if (reflProjectile.active && reflProjectile.velocity != Vector2.Zero && reflProjectile.hostile)
+                    if (SoAGlobalProjectile.ReflectAiList.Contains(reflProjectile.type))
                     {
-                        float damage = reflProjectile.damage;
-                        int penetrate = reflProjectile.penetrate;
-                        Vector2 velocity = -reflProjectile.velocity;
-                        int extraUpdates = reflProjectile.extraUpdates;
-                        float knockback = reflProjectile.knockBack;
-
-                        Vector2 dir = Main.MouseWorld - reflProjectile.position;
-                        dir.Normalize();
-                        dir *= (Math.Abs(reflProjectile.velocity.X) + Math.Abs(reflProjectile.velocity.Y));
-                        velocity = dir;
-                        if (reflProjectile.hostile)
+                        if (reflProjectile.active && reflProjectile.velocity != Vector2.Zero && reflProjectile.hostile)
                         {
-                            SoundEngine.PlaySound(SoundID.DD2_JavelinThrowersAttack, Projectile.Center);
-                            SoundEngine.PlaySound(SoundID.DD2_DarkMageAttack, Projectile.Center);
-                            reflProjectile.hostile = false;
-                            reflProjectile.friendly = true;
-                            reflProjectile.damage = (int)damage;
-                            reflProjectile.penetrate = penetrate;
-                            reflProjectile.velocity = velocity;
-                            reflProjectile.extraUpdates = extraUpdates;
-                            reflProjectile.knockBack = knockback;
+                            float damage = reflProjectile.damage;
+                            int penetrate = reflProjectile.penetrate;
+                            Vector2 velocity = -reflProjectile.velocity;
+                            int extraUpdates = reflProjectile.extraUpdates;
+                            float knockback = reflProjectile.knockBack;
 
-                            player.immune = true;
-                            player.immuneTime = 60;
+                            Vector2 dir = Main.MouseWorld - reflProjectile.position;
+                            dir.Normalize();
+                            dir *= (Math.Abs(reflProjectile.velocity.X) + Math.Abs(reflProjectile.velocity.Y));
+                            velocity = dir;
+                            if (reflProjectile.hostile)
+                            {
+                                SoundEngine.PlaySound(SoundID.DD2_JavelinThrowersAttack, Projectile.Center);
+                                SoundEngine.PlaySound(SoundID.DD2_DarkMageAttack, Projectile.Center);
+                                reflProjectile.hostile = false;
+                                reflProjectile.friendly = true;
+                                reflProjectile.damage = (int)damage;
+                                reflProjectile.penetrate = penetrate;
+                                reflProjectile.velocity = velocity;
+                                reflProjectile.extraUpdates = extraUpdates;
+                                reflProjectile.knockBack = knockback;
+
+                                player.immune = true;
+                                player.immuneTime = 60;
+                            }
                         }
                     }
                 }
@@ -108,12 +124,13 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee.GenesisRagnarok
                     player.AddBuff(ModContent.BuffType<ParryCooldown>(), 300);
                     player.AddBuff(BuffID.ParryDamageBuff, 300);
 
-                    if (player.HeldItem.type == ModContent.ItemType<GenesisAndRagnarok>())
+                    if (upgrades < 5 && upgrades >= 3)
                     {
-                        if ((player.HeldItem.ModItem as GenesisAndRagnarok).upgrades < 5 && (player.HeldItem.ModItem as GenesisAndRagnarok).upgrades >= 3)
-                            parryNPC.AddBuff(BuffID.OnFire, 600);
-                        else if ((player.HeldItem.ModItem as GenesisAndRagnarok).upgrades == 5)
-                            parryNPC.AddBuff(BuffID.Frostburn, 600);
+                        parryNPC.AddBuff(BuffID.OnFire, 600);
+                    }
+                    else if (upgrades == 5)
+                    {
+                        parryNPC.AddBuff(BuffID.Frostburn, 600);
                     }
                 }
             }
@@ -142,6 +159,7 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee.GenesisRagnarok
 
                 player.itemRotation = (float)Math.Atan2(remainingVectorToPlayer.Y * direction, remainingVectorToPlayer.X * direction);
             }
+            lightColor = Color.White;
             return true;
         }
     }

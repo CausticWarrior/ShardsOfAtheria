@@ -1,14 +1,10 @@
+using Microsoft.Xna.Framework;
+using ShardsOfAtheria.Projectiles.Weapon.Melee;
+using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ShardsOfAtheria.Items.Placeable;
-using ShardsOfAtheria.Tiles;
-using Microsoft.Xna.Framework;
-using Terraria;
-using ShardsOfAtheria.Projectiles.Weapon.Ranged;
-using Terraria.DataStructures;
-using ShardsOfAtheria.Projectiles.Other;
-using Terraria.GameContent.Creative;
-using ShardsOfAtheria.Items.Potions;
 
 namespace ShardsOfAtheria.Items.Weapons.Ranged
 {
@@ -16,9 +12,7 @@ namespace ShardsOfAtheria.Items.Weapons.Ranged
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("'Brilliant light show'");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+            SacrificeTotal = 1;
         }
 
         public override void SetDefaults()
@@ -33,7 +27,7 @@ namespace ShardsOfAtheria.Items.Weapons.Ranged
 
             Item.useTime = 12;
             Item.useAnimation = 36;
-            Item.reuseDelay = 40;
+            Item.reuseDelay = 20;
             Item.useStyle = ItemUseStyleID.Shoot;
             Item.UseSound = SoundID.Item5;
             Item.autoReuse = true;
@@ -41,7 +35,7 @@ namespace ShardsOfAtheria.Items.Weapons.Ranged
 
             Item.shootSpeed = 16f;
             Item.rare = ItemRarityID.Green;
-            Item.value = Item.sellPrice(0, 5);
+            Item.value = Item.sellPrice(0, 1, 75);
             Item.shoot = ProjectileID.PurificationPowder;
             Item.useAmmo = AmmoID.Arrow;
         }
@@ -50,26 +44,28 @@ namespace ShardsOfAtheria.Items.Weapons.Ranged
         {
             if (type == ProjectileID.WoodenArrowFriendly)
             {
-                //type = ModContent.ProjectileType<AreusArrow>();
+                type = ModContent.ProjectileType<FeatherBladeFriendly>();
             }
         }
 
         public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
+            SoundEngine.PlaySound(Item.UseSound);
             float numberProjectiles = 3;
             float rotation = MathHelper.ToRadians(5);
             position += Vector2.Normalize(velocity) * 10f;
             for (int i = 0; i < numberProjectiles; i++)
             {
                 Vector2 perturbedSpeed = velocity.RotatedBy(MathHelper.Lerp(-rotation, rotation, i / (numberProjectiles - 1))); // Watch out for dividing by 0 if there is only 1 projectile.
-                Projectile.NewProjectile(source, position, perturbedSpeed, type, damage, knockback, player.whoAmI);
+                Projectile proj = Projectile.NewProjectileDirect(source, position, perturbedSpeed, type, damage, knockback, player.whoAmI);
+                proj.DamageType = DamageClass.Ranged;
             }
             return false;
         }
 
         public override Vector2? HoldoutOffset()
         {
-            return new Vector2(0, 5);
+            return new Vector2(-8, 0);
         }
     }
 }

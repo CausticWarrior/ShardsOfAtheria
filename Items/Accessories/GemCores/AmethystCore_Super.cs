@@ -1,28 +1,24 @@
 ﻿using Microsoft.Xna.Framework;
+using ShardsOfAtheria.Utilities;
 using Terraria;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Items.Accessories.GemCores
 {
-	public class AmethystCore_Super : ModItem
-	{
-		public override void SetStaticDefaults()
+    public class AmethystCore_Super : ModItem
+    {
+        public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Super Amethyst Core");
-            Tooltip.SetDefault("Gives a great dash to the wearer\n" +
-                "Immunity to knockback, Poison, Venom, On Fire, cold debuffs, lava and fire blocks\n" +
-                "Master Ninja Gear effects");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+            SacrificeTotal = 1;
         }
 
-		public override void SetDefaults()
-		{
-			Item.width = 32;
-			Item.height = 32;
+        public override void SetDefaults()
+        {
+            Item.width = 32;
+            Item.height = 32;
             Item.accessory = true;
+            Item.canBePlacedInVanityRegardlessOfConditions = true;
 
             Item.rare = ItemRarityID.Lime;
             Item.value = Item.sellPrice(0, 3);
@@ -41,6 +37,8 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 
         public override void UpdateAccessory(Player player, bool hideVisual)
         {
+            player.ShardsOfAtheria().amethystMask = !hideVisual;
+
             AmethystDashPlayerII mp = player.GetModPlayer<AmethystDashPlayerII>();
             player.noKnockback = true;
             player.buffImmune[BuffID.Poisoned] = true;

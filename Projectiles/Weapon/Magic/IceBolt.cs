@@ -1,13 +1,19 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using MMZeroElements;
+using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.Audio;
 
 namespace ShardsOfAtheria.Projectiles.Weapon.Magic
 {
     public class IceBolt : ModProjectile
     {
+        public override void SetStaticDefaults()
+        {
+            ProjectileElements.Ice.Add(Type);
+        }
+
         public override void SetDefaults()
         {
             Projectile.width = 18;
@@ -18,7 +24,7 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Magic
             Projectile.tileCollide = true;
             Projectile.light = 1;
             Projectile.DamageType = DamageClass.Magic;
-            
+
             DrawOffsetX = 10;
         }
 
@@ -37,13 +43,15 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Magic
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             target.AddBuff(BuffID.Frostburn, 10 * 60);
-            SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
         }
 
-        public override bool OnTileCollide(Vector2 oldVelocity)
+        public override void Kill(int timeLeft)
         {
+            for (int i = 0; i < 10; i++)
+            {
+                Dust dust = Dust.NewDustDirect(Projectile.position, Projectile.width, Projectile.height, DustID.Ice);
+            }
             SoundEngine.PlaySound(SoundID.Item27, Projectile.position);
-            return base.OnTileCollide(oldVelocity);
         }
     }
 }

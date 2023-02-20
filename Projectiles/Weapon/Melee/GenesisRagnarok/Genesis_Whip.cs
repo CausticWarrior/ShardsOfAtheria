@@ -1,13 +1,15 @@
-﻿using Terraria;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using MMZeroElements;
+using ShardsOfAtheria.Items.Weapons.Melee;
+using ShardsOfAtheria.Players;
+using ShardsOfAtheria.Utilities;
+using System;
+using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using System;
-using Terraria.Audio;
-using Microsoft.Xna.Framework.Graphics;
-using Terraria.GameContent;
-using ShardsOfAtheria.Items.Weapons.Melee;
-using ShardsOfAtheria.Projectiles.Weapon.Melee.GenesisRagnarok.IceStuff;
 
 namespace ShardsOfAtheria.Projectiles.Weapon.Melee.GenesisRagnarok
 {
@@ -15,25 +17,32 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee.GenesisRagnarok
     {
         public int iceSickle = 3;
 
-        public override void SetStaticDefaults()
-        {
-            DisplayName.SetDefault("Genesis (Whip)");
-        }
-
         public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
         {
             Player player = Main.player[Projectile.owner];
+            ShardsPlayer shardsPlayer = player.ShardsOfAtheria();
+            int upgrades = shardsPlayer.genesisRagnarockUpgrades;
 
             if (player.HeldItem.type == ModContent.ItemType<GenesisAndRagnarok>())
             {
-                if ((player.HeldItem.ModItem as GenesisAndRagnarok).upgrades < 5 && (player.HeldItem.ModItem as GenesisAndRagnarok).upgrades >= 3)
+                if (upgrades < 5 && upgrades >= 3)
                     target.AddBuff(BuffID.OnFire, 600);
-                else if ((player.HeldItem.ModItem as GenesisAndRagnarok).upgrades == 5)
+                else if (upgrades == 5)
                 {
                     target.AddBuff(BuffID.Frostburn, 600);
-                    Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.Center, Vector2.Zero, ModContent.ProjectileType<IceExplosion>(), Projectile.damage, Projectile.knockBack, player.whoAmI);
+                    //Projectile proj = Projectile.NewProjectileDirect(Projectile.GetSource_FromThis(), target.Center, Vector2.Zero, ModContent.ProjectileType<LightningBoltFriendly>(), Projectile.damage,
+                    //Projectile.knockBack, player.whoAmI, 0, 1);
+                    //proj.DamageType = DamageClass.Melee;
+                    Projectile.Explode(target.Center);
                 }
             }
+        }
+
+        public override void SetStaticDefaults()
+        {
+            ProjectileElements.Ice.Add(Type);
+            ProjectileElements.Fire.Add(Type);
+            ProjectileElements.Electric.Add(Type);
         }
 
         public override void SetDefaults()
@@ -56,8 +65,11 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee.GenesisRagnarok
         public override void AI()
         {
             Player player = Main.player[Projectile.owner];
+            ShardsPlayer shardsPlayer = player.ShardsOfAtheria();
+            int upgrades = shardsPlayer.genesisRagnarockUpgrades;
             player.itemAnimation = 10;
             player.itemTime = 10;
+
             // Behavior
             if (Main.netMode != NetmodeID.Server && Projectile.localAI[0] == 0f)
             {
@@ -99,21 +111,21 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee.GenesisRagnarok
             }
             if (player.HeldItem.type == ModContent.ItemType<GenesisAndRagnarok>())
             {
-                if (--iceSickle == 0 && (player.HeldItem.ModItem as GenesisAndRagnarok).upgrades == 5)
+                if (--iceSickle == 0 && upgrades == 5)
                 {
                     Projectile.NewProjectile(Projectile.GetSource_FromThis(), Projectile.position + Projectile.velocity, Vector2.Zero, ProjectileID.IceSickle, Projectile.damage, Projectile.knockBack, player.whoAmI);
                     iceSickle = 3;
                 }
 
                 // Dust stuff
-                if ((Main.LocalPlayer.HeldItem.ModItem as GenesisAndRagnarok).upgrades >= 3)
+                if (upgrades >= 3)
                 {
                     if (Projectile.alpha == 0)
                     {
                         for (int num72 = 0; num72 < 2; num72++)
                         {
-                            Dust obj4 = Main.dust[Dust.NewDust(player.Center, Projectile.width, Projectile.height, (player.HeldItem.ModItem as GenesisAndRagnarok).upgrades < 5 ? DustID.Torch : DustID.Frost,
-                                0f, 0f, 100, default, (player.HeldItem.ModItem as GenesisAndRagnarok).upgrades < 5 ? 2f : .5f)];
+                            Dust obj4 = Main.dust[Dust.NewDust(player.Center, Projectile.width, Projectile.height, upgrades < 5 ? DustID.Torch : DustID.Frost,
+                                0f, 0f, 100, default, upgrades < 5 ? 2f : .5f)];
                             obj4.noGravity = true;
                             obj4.velocity *= 2f;
                             obj4.velocity += Projectile.localAI[0].ToRotationVector2();
@@ -124,8 +136,8 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee.GenesisRagnarok
                             if (Main.rand.NextBool(4))
                             {
                                 Vector2 position = Projectile.position + Projectile.velocity;
-                                Dust obj5 = Main.dust[Dust.NewDust(position, Projectile.width, Projectile.height, (player.HeldItem.ModItem as GenesisAndRagnarok).upgrades < 5 ? DustID.Torch : DustID.Frost, 0f, 0f, 100, default,
-                                    (player.HeldItem.ModItem as GenesisAndRagnarok).upgrades < 5 ? 2f : .5f)];
+                                Dust obj5 = Main.dust[Dust.NewDust(position, Projectile.width, Projectile.height, upgrades < 5 ? DustID.Torch : DustID.Frost, 0f, 0f, 100, default,
+                                    upgrades < 5 ? 2f : .5f)];
                                 obj5.noGravity = true;
                                 obj5.fadeIn = 0.5f;
                                 obj5.velocity += Projectile.localAI[0].ToRotationVector2();

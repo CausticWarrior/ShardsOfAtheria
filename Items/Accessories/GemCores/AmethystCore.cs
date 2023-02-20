@@ -1,29 +1,48 @@
 ﻿using Microsoft.Xna.Framework;
+using ShardsOfAtheria.Utilities;
 using Terraria;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Items.Accessories.GemCores
 {
-	public class AmethystCore : ModItem
-	{
-		public override void SetStaticDefaults()
-		{
-			Tooltip.SetDefault("Gives a dash to the wearer");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+    public class AmethystCore : ModItem
+    {
+        public override void Load()
+        {
+            if (Main.netMode != NetmodeID.Server)
+            {
+                EquipLoader.AddEquipTexture(Mod, "ShardsOfAtheria/Items/Accessories/GemCores/AmethystMask", EquipType.Head, this, "AmethystMask");
+            }
         }
 
-		public override void SetDefaults()
-		{
-			Item.width = 32;
-			Item.height = 32;
-			Item.accessory = true;
+        public void SetupDrawing()
+        {
+            if (Main.netMode != NetmodeID.Server)
+            {
+                int equipSlotHead = EquipLoader.GetEquipSlot(Mod, "AmethystMask", EquipType.Head);
+                ArmorIDs.Head.Sets.DrawHead[equipSlotHead] = true;
+                ArmorIDs.Head.Sets.DrawFullHair[equipSlotHead] = true;
+            }
+        }
 
-			Item.rare = ItemRarityID.Blue;
-			Item.value = Item.sellPrice(0, 1, 25);
-		}
+        public override void SetStaticDefaults()
+        {
+            SacrificeTotal = 1;
+
+            SetupDrawing();
+        }
+
+        public override void SetDefaults()
+        {
+            Item.width = 32;
+            Item.height = 32;
+            Item.accessory = true;
+            Item.canBePlacedInVanityRegardlessOfConditions = true;
+
+            Item.rare = ItemRarityID.Blue;
+            Item.value = Item.sellPrice(0, 1, 25);
+        }
 
         public override void AddRecipes()
         {
@@ -36,7 +55,9 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
-		{
+        {
+            player.ShardsOfAtheria().amethystMask = !hideVisual;
+
             AmethystDashPlayer mp = player.GetModPlayer<AmethystDashPlayer>();
             mp.DashVelocity = 13f;
             AmethystDashPlayer.MAX_DASH_DELAY = 50;

@@ -1,10 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using ShardsOfAtheria.Buffs;
-using System;
-using System.Collections.Generic;
+using ShardsOfAtheria.Buffs.NPCDebuff;
+using MMZeroElements;
 using Terraria;
-using Terraria.Audio;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Projectiles.Weapon.Melee
@@ -13,8 +10,8 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee
     {
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Entropy Blade");
             Main.projFrames[Projectile.type] = 5;
+            ProjectileElements.Ice.Add(Type);
         }
 
         public override void SetDefaults()

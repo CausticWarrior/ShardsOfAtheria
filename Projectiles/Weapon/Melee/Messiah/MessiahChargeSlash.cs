@@ -1,7 +1,10 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ShardsOfAtheria.Globals;
+using MMZeroElements;
 using ShardsOfAtheria.Items.Weapons.Melee;
 using Terraria;
+using Terraria.ID;
 using Terraria.ModLoader;
+using WebmilioCommons.Effects.ScreenShaking;
 
 namespace ShardsOfAtheria.Projectiles.Weapon.Melee.Messiah
 {
@@ -9,10 +12,13 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee.Messiah
     {
         public int num1;
 
+        public override string Texture => "ShardsOfAtheria/Projectiles/Weapon/Melee/Messiah/MessiahRanbu4";
+
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Ranbu 4");
             Main.projFrames[Type] = 4;
+            ProjectileElements.Fire.Add(Type);
+            SoAGlobalProjectile.Eraser.Add(Type);
         }
 
         public override void SetDefaults()
@@ -55,6 +61,12 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee.Messiah
             {
                 Projectile.timeLeft--;
             }
+        }
+
+        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        {
+            target.AddBuff(BuffID.OnFire3, 600);
+            ScreenShake.ShakeScreen(11, 60);
         }
 
         public override void PostAI()

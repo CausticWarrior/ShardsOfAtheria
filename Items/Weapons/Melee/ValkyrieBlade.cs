@@ -1,6 +1,6 @@
+using MMZeroElements;
 using ShardsOfAtheria.Projectiles.Weapon.Melee;
 using Terraria;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -10,8 +10,10 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
     {
         public override void SetStaticDefaults()
         {
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+            SacrificeTotal = 1;
+            WeaponElements.Electric.Add(Type);
         }
+
         public override void SetDefaults()
         {
             Item.width = 32;
@@ -30,7 +32,7 @@ namespace ShardsOfAtheria.Items.Weapons.Melee
 
             Item.shootSpeed = 16;
             Item.rare = ItemRarityID.Blue;
-            Item.value = Item.sellPrice(0,  2, 25);
+            Item.value = Item.sellPrice(0, 1, 75);
 
             Item.shoot = ModContent.ProjectileType<FeatherBladeFriendly>();
         }

@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using MMZeroElements;
+using ShardsOfAtheria.Items.SoulCrystals;
 using ShardsOfAtheria.Players;
 using System;
 using Terraria;
@@ -12,13 +14,18 @@ namespace ShardsOfAtheria.Projectiles.Minions
 {
     public class YourTentacle : ModProjectile
     {
-        public int aiTimer;
-        public float degrees;
+        float degrees;
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Your Tentacle");
+            // This is necessary for right-click targeting
+            ProjectileID.Sets.MinionTargettingFeature[Projectile.type] = true;
+
+            Main.projPet[Projectile.type] = true; // Denotes that this projectile is a pet or minion
+
+            ProjectileID.Sets.CultistIsResistantTo[Projectile.type] = true; // Make the cultist resistant to this projectile, as it's resistant to all homing projectiles.
             Main.projFrames[Projectile.type] = 4;
+            ProjectileElements.Ice.Add(Type);
         }
 
         public override void SetDefaults()
@@ -36,6 +43,18 @@ namespace ShardsOfAtheria.Projectiles.Minions
             DrawOriginOffsetY = -6;
         }
 
+        // Here you can decide if your minion breaks things like grass or pots
+        public override bool? CanCutTiles()
+        {
+            return false;
+        }
+
+        // This is mandatory if your minion deals contact damage (further related stuff in AI() in the Movement region)
+        public override bool MinionContactDamage()
+        {
+            return true;
+        }
+
         public override void AI()
         {
             if (++Projectile.frameCounter >= 10)
@@ -51,6 +70,7 @@ namespace ShardsOfAtheria.Projectiles.Minions
 
             if (!CheckActive(owner))
             {
+                Projectile.Kill();
                 return;
             }
             Projectile.rotation = Vector2.Normalize(Projectile.Center - owner.Center).ToRotation() + MathHelper.ToRadians(180);
@@ -76,7 +96,7 @@ namespace ShardsOfAtheria.Projectiles.Minions
         // This is the "active check", makes sure the minion is alive while the player is alive, and despawns if not
         private bool CheckActive(Player owner)
         {
-            if (owner.dead || !owner.active || !owner.GetModPlayer<SlayerPlayer>().PlantSoul)
+            if (owner.dead || !owner.active || !owner.GetModPlayer<SlayerPlayer>().soulCrystals.Contains(ModContent.ItemType<PlantSoulCrystal>()))
                 return false;
             else Projectile.timeLeft = 2;
             return true;

@@ -1,27 +1,22 @@
+using ShardsOfAtheria.Items.Materials;
 using Terraria;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ShardsOfAtheria.Buffs;
-using ShardsOfAtheria.Items.Placeable;
-using Terraria.DataStructures;
 
 namespace ShardsOfAtheria.Items.Potions
 {
 	public class BoneMarrowInjection : ModItem
 	{
-		public override void SetStaticDefaults() 
+		public override void SetStaticDefaults()
 		{
-			Tooltip.SetDefault("Strengthens your bones");
-
-			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 30;
+			SacrificeTotal = 30;
 		}
 
 		public override void SetDefaults()
 		{
 			Item.width = 48;
 			Item.height = 48;
-			Item.maxStack = 30;
+			Item.maxStack = 9999;
 
 			Item.useTime = 15;
 			Item.useAnimation = 15;
@@ -36,8 +31,8 @@ namespace ShardsOfAtheria.Items.Potions
 			Item.buffTime = 14400;
 		}
 
-        public override void AddRecipes()
-        {
+		public override void AddRecipes()
+		{
 			CreateRecipe()
 				.AddIngredient(ModContent.ItemType<EmptyNeedle>())
 				.AddIngredient(ItemID.Bone)
@@ -56,6 +51,15 @@ namespace ShardsOfAtheria.Items.Potions
 			if (!player.HasBuff(ModContent.BuffType<InjectionShock>()))
 				return true;
 			else return false;
+		}
+	}
+
+	public class BoneStrength : ModBuff
+	{
+		public override void Update(Player player, ref int buffIndex)
+		{
+			player.GetDamage(DamageClass.Generic) += .1f;
+			player.endurance += .2f;
 		}
 	}
 }

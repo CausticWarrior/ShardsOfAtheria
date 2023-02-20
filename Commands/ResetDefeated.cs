@@ -1,5 +1,8 @@
-﻿using Terraria;
-using Terraria.ID;
+﻿using Microsoft.Xna.Framework;
+using ShardsOfAtheria.Systems;
+using Terraria;
+using Terraria.Chat;
+using Terraria.Localization;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Commands
@@ -18,13 +21,11 @@ namespace ShardsOfAtheria.Commands
 		public override void Action(CommandCaller caller, string input, string[] args)
 		{
 			Player player = Main.LocalPlayer;
-			if (player.name != "The Eternal Ace")
-				return;
 
 			NPC.downedSlimeKing = false;
 			NPC.downedBoss1 = false;
 			NPC.downedBoss2 = false;
-			SoADownedSystem.downedValkyrie = false;
+			ShardsDownedSystem.downedValkyrie = false;
 			NPC.downedQueenBee = false;
 			NPC.downedBoss3 = false;
 			NPC.downedDeerclops = false;
@@ -39,7 +40,7 @@ namespace ShardsOfAtheria.Commands
 			NPC.downedFishron = false;
 			NPC.downedEmpressOfLight = false;
 			NPC.downedMoonlord = false;
-			Main.NewText("Bosses have no longer been defeated");
+			ChatHelper.SendChatMessageToClient(NetworkText.FromLiteral("Bosses have no longer been defeated"), Color.White, player.whoAmI);
 		}
-    }
+	}
 }

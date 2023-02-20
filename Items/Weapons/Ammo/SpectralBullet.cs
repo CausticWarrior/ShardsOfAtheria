@@ -1,8 +1,8 @@
+using MMZeroElements;
+using ShardsOfAtheria.Projectiles.Weapon.Ammo;
 using Terraria;
-using Terraria.GameContent.Creative;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ShardsOfAtheria.Projectiles.Weapon.Ammo;
 
 namespace ShardsOfAtheria.Items.Weapons.Ammo
 {
@@ -10,7 +10,8 @@ namespace ShardsOfAtheria.Items.Weapons.Ammo
     {
         public override void SetStaticDefaults()
         {
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 99;
+            SacrificeTotal = 999;
+            WeaponElements.Ice.Add(Type);
         }
 
         public override void SetDefaults()

@@ -1,8 +1,9 @@
 using Microsoft.Xna.Framework;
+using MMZeroElements;
+using ShardsOfAtheria.Items.Materials;
 using ShardsOfAtheria.Items.Placeable;
 using ShardsOfAtheria.Projectiles.Weapon.Magic;
 using Terraria;
-using Terraria.GameContent.Creative;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -13,10 +14,9 @@ namespace ShardsOfAtheria.Items.Weapons.Magic
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("Left Click to fire an ice bolt, <right> to summon lightning\n" +
-                "'Destiny of destruction awaits'");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+            SacrificeTotal = 1;
+            WeaponElements.Ice.Add(Type);
+            WeaponElements.Electric.Add(Type);
         }
 
         public override void SetDefaults()
@@ -45,7 +45,7 @@ namespace ShardsOfAtheria.Items.Weapons.Magic
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<BionicBarItem>(), 7)
+                .AddIngredient(ModContent.ItemType<BionicBarItem>(), 20)
                 .AddIngredient(ItemID.Ectoplasm, 5)
                 .AddIngredient(ItemID.IceBlock, 10)
                 .AddIngredient(ModContent.ItemType<SoulOfSpite>(), 10)
@@ -70,7 +70,7 @@ namespace ShardsOfAtheria.Items.Weapons.Magic
                 Item.mana = 20;
                 Item.knockBack = 0;
                 Item.shoot = ModContent.ProjectileType<LightningBoltFriendly>();
-                Item.shootSpeed = 16;
+                Item.shootSpeed = 2f;
             }
             else
             {
@@ -82,7 +82,7 @@ namespace ShardsOfAtheria.Items.Weapons.Magic
                 Item.mana = 6;
                 Item.knockBack = 3;
                 Item.shoot = ModContent.ProjectileType<IceBolt>();
-                Item.shootSpeed = 16;
+                Item.shootSpeed = 16f;
             }
             return base.CanUseItem(player);
         }
@@ -91,11 +91,11 @@ namespace ShardsOfAtheria.Items.Weapons.Magic
         {
             if (player.altFunctionUse == 2)
             {
-                Projectile.NewProjectile(source, Main.MouseWorld - new Vector2(0, 200), new Vector2(0, 10), type, damage, knockback, player.whoAmI);
+                Vector2 pos = Main.MouseWorld - new Vector2(0, 200);
+                Projectile.NewProjectile(source, pos, Vector2.Normalize(Main.MouseWorld - pos) * 2f, type, damage, knockback, player.whoAmI, 0, 1);
                 return false;
             }
-            else
-                return true;
+            return true;
         }
     }
 }

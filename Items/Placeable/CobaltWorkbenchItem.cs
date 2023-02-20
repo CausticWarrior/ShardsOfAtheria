@@ -1,18 +1,14 @@
-using Terraria.GameContent.Creative;
+using ShardsOfAtheria.Tiles.Crafting;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ShardsOfAtheria.Tiles;
 
 namespace ShardsOfAtheria.Items.Placeable
 {
-	public class CobaltWorkbenchItem : ModItem
+    public class CobaltWorkbenchItem : ModItem
 	{
-		public override void SetStaticDefaults() 
+		public override void SetStaticDefaults()
 		{
-			DisplayName.SetDefault("Cobalt Workbench");
-			Tooltip.SetDefault("Used to completely skip having to gather mythril ore");
-
-			CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+			SacrificeTotal = 1;
 		}
 
 		public override void SetDefaults()

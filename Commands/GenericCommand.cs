@@ -1,15 +1,13 @@
-﻿using ShardsOfAtheria.Items.Weapons.Melee;
-using ShardsOfAtheria.Players;
-using ShardsOfAtheria.Projectiles.NPCProj;
-using ShardsOfAtheria.Projectiles.Other;
-using ShardsOfAtheria.Projectiles.Weapon.Summon;
+﻿using ShardsOfAtheria.Players;
+using ShardsOfAtheria.Systems;
+using ShardsOfAtheria.Utilities;
+using System;
 using Terraria;
-using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace ShardsOfAtheria.Commands
 {
-    class GenericCommand : ModCommand
+	class GenericCommand : ModCommand
 	{
 		public override CommandType Type
 			=> CommandType.Chat;
@@ -26,12 +24,14 @@ namespace ShardsOfAtheria.Commands
 		public override void Action(CommandCaller caller, string input, string[] args)
 		{
 			Player player = Main.LocalPlayer;
-			SlayerPlayer slayerPlayer = Main.LocalPlayer.GetModPlayer<SlayerPlayer>();
-			SoAPlayer soaPlayer = Main.LocalPlayer.GetModPlayer<SoAPlayer>();
-			SoADownedSystem soaWorld = ModContent.GetInstance<SoADownedSystem>();
+			SlayerPlayer slayer = Main.LocalPlayer.Slayer();
+			ShardsPlayer soaPlayer = Main.LocalPlayer.ShardsOfAtheria();
+			OverchargePlayer overchargePlayer = Main.LocalPlayer.Overcharged();
+			ShardsDownedSystem soaWorld = ModContent.GetInstance<ShardsDownedSystem>();
 
-			if (player.name != "The Eternal Ace")
-				return;
+			Console.WriteLine("----------Hello mod developer----------");
+			soaPlayer.genesisRagnarockUpgrades = 0;
+			ShardsHelpers.Log("Reset Genesis and Ragnarok upgrades", true);
 		}
-    }
+	}
 }

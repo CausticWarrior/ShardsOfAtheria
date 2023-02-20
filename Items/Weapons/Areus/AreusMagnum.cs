@@ -1,20 +1,20 @@
+using ShardsOfAtheria.Globals;
+using ShardsOfAtheria.Items.Materials;
+using ShardsOfAtheria.Items.Placeable;
+using ShardsOfAtheria.Players;
+using ShardsOfAtheria.Systems;
+using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
-using ShardsOfAtheria.Items.Placeable;
-using Microsoft.Xna.Framework;
-using Terraria;
-using Terraria.GameContent.Creative;
-using ShardsOfAtheria.Items.Potions;
 
 namespace ShardsOfAtheria.Items.Weapons.Areus
 {
-    public class AreusMagnum : ModItem
+    public class AreusMagnum : OverchargeWeapon
     {
         public override void SetStaticDefaults()
         {
-            Tooltip.SetDefault("'Headshots do not crit'");
-
-            CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId[Type] = 1;
+            SacrificeTotal = 1;
+            SoAGlobalItem.AreusWeapon.Add(Type);
         }
 
         public override void SetDefaults()
@@ -35,33 +35,20 @@ namespace ShardsOfAtheria.Items.Weapons.Areus
             Item.noMelee = true;
 
             Item.shootSpeed = 16f;
+            Item.rare = ItemRarityID.Cyan;
             Item.value = Item.sellPrice(0, 0, 25);
             Item.shoot = ItemID.PurificationPowder;
             Item.useAmmo = AmmoID.Bullet;
-            base.SetDefaults();
         }
 
         public override void AddRecipes()
         {
             CreateRecipe()
-                .AddIngredient(ModContent.ItemType<AreusShard>(), 5)
+                .AddIngredient(ModContent.ItemType<AreusShard>(), 16)
+                .AddRecipeGroup(ShardsRecipes.Gold, 5)
                 .AddIngredient(ModContent.ItemType<SoulOfDaylight>(), 7)
-                .AddIngredient(ItemID.HellstoneBar, 10)
-                .AddTile(TileID.Hellforge)
+                .AddTile(TileID.Anvils)
                 .Register();
-        }
-
-        public override void ModifyWeaponDamage(Player player, ref StatModifier damage)
-        {
-            if (player.HasBuff(ModContent.BuffType<Conductive>()))
-            {
-                damage += .15f;
-            }
-        }
-
-        public override Vector2? HoldoutOffset()
-        {
-            return new Vector2(-1, 0);
         }
     }
 }

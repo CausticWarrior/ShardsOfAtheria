@@ -1,9 +1,9 @@
-﻿using Terraria;
+﻿using ShardsOfAtheria.Buffs.AnyDebuff;
+using MMZeroElements;
+using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
-using Microsoft.Xna.Framework;
-using Terraria.Audio;
-using ShardsOfAtheria.Buffs;
 
 namespace ShardsOfAtheria.Projectiles.Weapon.Melee
 {
@@ -22,6 +22,8 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee
             // Vanilla values range from 9f(Wood) to 17.5f(Terrarian), and defaults to 10f
             ProjectileID.Sets.YoyosTopSpeed[Projectile.type] = 10f;
             Main.projFrames[Projectile.type] = 2;
+
+            ProjectileElements.Electric.Add(Type);
         }
         public override void SetDefaults()
         {
@@ -52,11 +54,11 @@ namespace ShardsOfAtheria.Projectiles.Weapon.Melee
                     SoundEngine.PlaySound(new SoundStyle($"{nameof(ShardsOfAtheria)}/Sounds/Item/ReactorMeltdownAlarm")
                     {
                         Volume = 0.9f,
-                        PitchVariance = 0.2f,
                         MaxInstances = 3,
                     });
                 }
             }
+            base.AI();
         }
 
         public override void PostAI()
