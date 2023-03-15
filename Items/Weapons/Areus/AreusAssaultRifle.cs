@@ -5,6 +5,7 @@ using ShardsOfAtheria.Players;
 using ShardsOfAtheria.Projectiles.Weapon.Areus;
 using ShardsOfAtheria.Projectiles.Weapon.Magic;
 using ShardsOfAtheria.Systems;
+using ShardsOfAtheria.Tiles.Crafting;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -46,7 +47,7 @@ namespace ShardsOfAtheria.Items.Weapons.Areus
                 .AddIngredient(ModContent.ItemType<AreusShard>(), 15)
                 .AddRecipeGroup(ShardsRecipes.Gold, 5)
                 .AddIngredient(ItemID.FragmentVortex, 10)
-                .AddTile(TileID.LunarCraftingStation)
+                .AddTile(ModContent.TileType<AreusFabricator>())
                 .Register();
         }
 
@@ -151,24 +152,25 @@ namespace ShardsOfAtheria.Items.Weapons.Areus
             base.ModifyTooltips(tooltips);
         }
 
-        public override void Overcharge(Player player, int projType, float damageMultiplier, Vector2 velocity, float ai1 = 1f)
+        public override void DoOverchargeEffect(Player player, int projType, float damageMultiplier, Vector2 velocity, float ai1 = 1f)
         {
             switch (fireMode)
             {
                 case 0:
-                    base.Overcharge(player, ModContent.ProjectileType<LightningBoltFriendly>(), damageMultiplier, velocity, ai1);
+                    base.DoOverchargeEffect(player, ModContent.ProjectileType<LightningBoltFriendly>(), damageMultiplier, velocity, ai1);
                     break;
                 case 1:
                     for (int i = 0; i < 3; i++)
                     {
-                        Vector2 vel = Vector2.Normalize(Main.MouseWorld - player.Center).RotatedByRandom(MathHelper.ToRadians(20f)) * velocity;
+                        Vector2 vel = Vector2.Normalize(velocity).RotatedByRandom(MathHelper.ToRadians(20f)) * Item.shootSpeed;
                         Projectile proj = Projectile.NewProjectileDirect(Item.GetSource_ItemUse(Item), player.Center, vel,
-                            ModContent.ProjectileType<LightningBoltFriendly>(), (int)(Item.damage * damageMultiplier), Item.knockBack, player.whoAmI, 0f, 0f);
+                            ModContent.ProjectileType<LightningBoltFriendly>(), (int)(player.GetWeaponDamage(Item) * damageMultiplier), Item.knockBack, player.whoAmI, 0f, 0f);
                         proj.DamageType = DamageClass.Ranged;
                     }
+                    ConsumeOvercharge(player);
                     break;
                 case 2:
-                    base.Overcharge(player, ModContent.ProjectileType<AreusGrenadeProj>(), damageMultiplier, velocity, 0f);
+                    base.DoOverchargeEffect(player, ModContent.ProjectileType<AreusGrenadeProj>(), damageMultiplier, velocity * 8, 0f);
                     break;
             }
         }

@@ -1,5 +1,4 @@
 ﻿using ShardsOfAtheria.Utilities;
-using ShardsOfAtheria.Systems;
 using System.Collections.Generic;
 using Terraria;
 using Terraria.ID;
@@ -22,7 +21,7 @@ namespace ShardsOfAtheria.Items.Accessories
             Item.accessory = true;
 
             Item.rare = ItemRarityID.Blue;
-            Item.value = Item.sellPrice(0, 1, 25);
+            Item.value = 146500;
         }
 
         public override void UpdateAccessory(Player player, bool hideVisual)
@@ -30,20 +29,16 @@ namespace ShardsOfAtheria.Items.Accessories
             player.ShardsOfAtheria().rushDrive = true;
         }
 
-        public override void AddRecipes()
-        {
-            CreateRecipe()
-                .AddRecipeGroup(ShardsRecipes.EvilBar, 15)
-                .AddRecipeGroup(ShardsRecipes.EvilMaterial, 5)
-                .AddIngredient(ItemID.Bone, 5)
-                .AddTile(TileID.Hellforge)
-                .Register();
-        }
-
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            tooltips.Add(new TooltipLine(Mod, "tip", string.Format(Language.GetTextValue("Mods.ShardsOfAtheria.Common.RushDrive"),
-                    ShardsOfAtheria.PhaseSwitch.GetAssignedKeys().Count > 0 ? ShardsOfAtheria.PhaseSwitch.GetAssignedKeys()[0] : "[Unbounded Hotkey]")));
+            for (int i = 0; i < 5; i++)
+            {
+                tooltips.Remove(tooltips[tooltips.GetIndex("Tooltip" + i)]);
+            }
+            List<string> phaseKey = ShardsOfAtheriaMod.PhaseSwitch.GetAssignedKeys();
+            string lineText = Language.GetTextValue("Mods.ShardsOfAtheria.ItemTooltip.RushDrive",
+                    phaseKey.Count > 0 ? phaseKey[0] : "[Unbounded Hotkey]");
+            tooltips.AddTooltip(new TooltipLine(Mod, "Tooltip", lineText));
         }
     }
 }

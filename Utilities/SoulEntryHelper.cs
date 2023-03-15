@@ -16,13 +16,13 @@ namespace ShardsOfAtheria.Utilities
         public static void NewEntry(string mod, string name, string tooltip, int crystalItem)
         {
             entries.Add(new PageEntry(mod, name, tooltip, Color.White, crystalItem));
-            ShardsOfAtheria.MaxNecronomiconPages++;
+            ShardsOfAtheriaMod.MaxNecronomiconPages++;
         }
 
         public static void NewEntry(string mod, string name, string tooltip, Color pageColor, int crystalItem)
         {
             entries.Add(new PageEntry(mod, name, tooltip, pageColor, crystalItem));
-            ShardsOfAtheria.MaxNecronomiconPages++;
+            ShardsOfAtheriaMod.MaxNecronomiconPages++;
         }
 
         public struct PageEntry
@@ -37,10 +37,9 @@ namespace ShardsOfAtheria.Utilities
             {
                 this.mod = mod;
                 this.entryName = entryName;
-                this.soulCrystalTooltip = soulCrystalTooltip;
+                this.soulCrystalTooltip = Lang.GetTooltip(crystalItem).ToString();
                 this.entryColor = entryColor;
                 this.crystalItem = crystalItem;
-
             }
 
             public string EntryText()
@@ -70,6 +69,8 @@ namespace ShardsOfAtheria.Utilities
             NewEntry("Terraria", "Golem", Language.GetTextValue("Mods.ShardsOfAtheria.ItemTooltip.GolemSoulCrystal"), Color.DarkOrange, ModContent.ItemType<GolemSoulCrystal>());
             NewEntry("Terraria", "Duke Fishron", Language.GetTextValue("Mods.ShardsOfAtheria.ItemTooltip.DukeSoulCrystal"), Color.SeaGreen, ModContent.ItemType<DukeSoulCrystal>());
             NewEntry("Terraria", "Empress of Light", Language.GetTextValue("Mods.ShardsOfAtheria.ItemTooltip.EmpressSoulCrystal"), Main.DiscoColor, ModContent.ItemType<EmpressSoulCrystal>());
+            NewEntry("Shards of Atheria", "Phoenix Warrior, Nova Stellar", Language.GetTextValue("Mods.ShardsOfAtheria.ItemTooltip.ValkyrieSoulCrystal"),
+                Color.Red, ModContent.ItemType<ValkyrieSoulCrystal>());
             NewEntry("Terraria", "Lunatic Cultist", Language.GetTextValue("Mods.ShardsOfAtheria.ItemTooltip.LunaticSoulCrystal"), Color.Blue, ModContent.ItemType<LunaticSoulCrystal>());
             NewEntry("Terraria", "Moon Lord", Language.GetTextValue("Mods.ShardsOfAtheria.ItemTooltip.LordSoulCrystal"), Color.LightCyan, ModContent.ItemType<LordSoulCrystal>());
             NewEntry("Shards of Atheria", "Senterra, Atherial Land", WipEntry(), Color.Green, ItemID.None);

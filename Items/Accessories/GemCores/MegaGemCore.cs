@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using ShardsOfAtheria.Buffs.Cooldowns;
+using ShardsOfAtheria.Items.Accessories.GemCores.SuperCores;
 using ShardsOfAtheria.Utilities;
 using System.Collections.Generic;
 using Terraria;
@@ -43,8 +44,8 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 
         public override void ModifyTooltips(List<TooltipLine> tooltips)
         {
-            tooltips.Add(new TooltipLine(Mod, "Teleport", string.Format(Language.GetTextValue("Mods.ShardsOfAtheria.Common.TeleportOnKeyPress"),
-                    ShardsOfAtheria.EmeraldTeleportKey.GetAssignedKeys().Count > 0 ? ShardsOfAtheria.EmeraldTeleportKey.GetAssignedKeys()[0] : "[Unbounded Hotkey]")));
+            tooltips.Insert(tooltips.GetIndex("OneDropLogo"), new TooltipLine(Mod, "Teleport", string.Format(Language.GetTextValue("Mods.ShardsOfAtheria.Common.TeleportOnKeyPress"),
+                    ShardsOfAtheriaMod.EmeraldTeleportKey.GetAssignedKeys().Count > 0 ? ShardsOfAtheriaMod.EmeraldTeleportKey.GetAssignedKeys()[0] : "[Unbounded Hotkey]")));
         }
 
         public override void SetDefaults()
@@ -94,7 +95,6 @@ namespace ShardsOfAtheria.Items.Accessories.GemCores
 
             player.ShardsOfAtheria().amethystMask = !hideVisual;
             player.ShardsOfAtheria().diamanodShield = !hideVisual;
-            player.ShardsOfAtheria().emeraldWings = player.velocity.Y != 0 || !hideVisual;
             player.ShardsOfAtheria().rubyGauntlet = !hideVisual;
             player.ShardsOfAtheria().sapphireSpirit = !hideVisual;
             player.ShardsOfAtheria().topazNecklace = !hideVisual;

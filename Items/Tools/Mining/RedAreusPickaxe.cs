@@ -1,8 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using MMZeroElements;
+using ShardsOfAtheria.Dusts;
 using ShardsOfAtheria.Globals;
 using ShardsOfAtheria.Items.Placeable;
 using ShardsOfAtheria.Systems;
+using ShardsOfAtheria.Tiles.Crafting;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -47,16 +49,15 @@ namespace ShardsOfAtheria.Items.Tools.Mining
                 .AddIngredient(ModContent.ItemType<AreusShard>(), 20)
                 .AddRecipeGroup(ShardsRecipes.Gold, 6)
                 .AddIngredient(ItemID.Wire, 10)
-                .AddTile(TileID.MythrilAnvil)
+                .AddTile(ModContent.TileType<AreusFabricator>())
                 .Register();
         }
 
         public override void MeleeEffects(Player player, Rectangle hitbox)
         {
-            if (Main.rand.NextBool(10))
+            if (Main.rand.NextBool(5))
             {
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Electric);
-                Dust.NewDust(new Vector2(hitbox.X, hitbox.Y), hitbox.Width, hitbox.Height, DustID.Torch);
+                Dust.NewDust(hitbox.TopLeft(), hitbox.Width, hitbox.Height, ModContent.DustType<AreusDust_Red>());
             }
         }
     }

@@ -4,6 +4,7 @@ using ShardsOfAtheria.Items.Materials;
 using ShardsOfAtheria.Items.Placeable;
 using ShardsOfAtheria.Players;
 using ShardsOfAtheria.Projectiles.Weapon.Areus;
+using ShardsOfAtheria.Tiles.Crafting;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
@@ -46,9 +47,9 @@ namespace ShardsOfAtheria.Items.Weapons.Areus
             overchargeShoot = false;
         }
 
-        public override void Overcharge(Player player, int projType, float damageMultiplier, Vector2 velocity, float ai1 = 1)
+        public override void DoOverchargeEffect(Player player, int projType, float damageMultiplier, Vector2 velocity, float ai1 = 1)
         {
-            base.Overcharge(player, ModContent.ProjectileType<AreusGrenadeProj>(), damageMultiplier, velocity, ai1);
+            base.DoOverchargeEffect(player, ModContent.ProjectileType<AreusGrenadeProj>(), damageMultiplier, velocity, ai1);
         }
 
         public override void AddRecipes()
@@ -57,7 +58,7 @@ namespace ShardsOfAtheria.Items.Weapons.Areus
                 .AddIngredient(ModContent.ItemType<AreusShard>(), 3)
                 .AddIngredient(ItemID.GoldBar)
                 .AddIngredient(ModContent.ItemType<SoulOfSpite>(), 2)
-                .AddTile(TileID.Anvils)
+                .AddTile(ModContent.TileType<AreusFabricator>())
                 .Register();
         }
     }

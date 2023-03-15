@@ -1,4 +1,4 @@
-﻿using ShardsOfAtheria.Players;
+﻿using ShardsOfAtheria.Utilities;
 using Terraria;
 using Terraria.ID;
 using Terraria.Localization;
@@ -32,7 +32,7 @@ namespace ShardsOfAtheria.Items.SinfulSouls
         public bool targetFound;
         public bool envy;
         public NPC target;
-        public int focusDamage;
+        public int targetHitAmount;
 
         public override void ResetEffects()
         {
@@ -52,7 +52,7 @@ namespace ShardsOfAtheria.Items.SinfulSouls
                 if (target.life <= 0 && target.type == this.target.type)
                 {
                     targetFound = false;
-                    focusDamage = 0;
+                    targetHitAmount = 0;
                 }
             }
         }
@@ -64,7 +64,7 @@ namespace ShardsOfAtheria.Items.SinfulSouls
                 if (target.life <= 0 && target == this.target)
                 {
                     targetFound = false;
-                    focusDamage = 0;
+                    targetHitAmount = 0;
                 }
             }
         }
@@ -76,12 +76,12 @@ namespace ShardsOfAtheria.Items.SinfulSouls
                 if (target != this.target || !targetFound)
                 {
                     this.target = target;
-                    focusDamage = 0;
+                    targetHitAmount = 0;
                 }
                 else if (target == this.target)
                 {
-                    damage += focusDamage;
-                    focusDamage++;
+                    damage += targetHitAmount * 3;
+                    targetHitAmount++;
                 }
             }
         }
@@ -93,12 +93,12 @@ namespace ShardsOfAtheria.Items.SinfulSouls
                 if (target != this.target || !targetFound)
                 {
                     this.target = target;
-                    focusDamage = 0;
+                    targetHitAmount = 0;
                 }
                 else if (target == this.target)
                 {
-                    damage += focusDamage;
-                    focusDamage++;
+                    damage += targetHitAmount;
+                    targetHitAmount++;
                 }
             }
         }
@@ -114,8 +114,7 @@ namespace ShardsOfAtheria.Items.SinfulSouls
 
         public override void Update(Player player, ref int buffIndex)
         {
-            player.GetModPlayer<SinfulPlayer>().SevenSoulUsed = 1;
-            player.GetModPlayer<EnvyPlayer>().envy = true;
+            player.Envy().envy = true;
             player.AddBuff(BuffID.Darkness, 2);
             base.Update(player, ref buffIndex);
         }
